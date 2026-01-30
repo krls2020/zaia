@@ -1,6 +1,8 @@
 package commands
 
 import (
+	"errors"
+
 	"github.com/zeropsio/zaia/internal/auth"
 	"github.com/zeropsio/zaia/internal/output"
 	"github.com/zeropsio/zaia/internal/platform"
@@ -12,7 +14,8 @@ func resolveCredentials(storagePath string) (*auth.Credentials, error) {
 	mgr := auth.NewManager(storage, nil)
 	creds, err := mgr.GetCredentials()
 	if err != nil {
-		if authErr, ok := err.(*auth.AuthError); ok {
+		var authErr *auth.AuthError
+		if errors.As(err, &authErr) {
 			return nil, output.Err(authErr.Code, authErr.Message, authErr.Suggestion, nil)
 		}
 		return nil, output.Err(platform.ErrAuthRequired, "Not authenticated", "Run: zaia login <token>", nil)
@@ -47,7 +50,7 @@ func listHostnames(services []platform.ServiceStack) string {
 
 // resolveServiceID resolves a hostname to a service ID.
 // Returns the service or outputs a SERVICE_NOT_FOUND error.
-func resolveServiceID(client platform.Client, projectID, hostname string, services []platform.ServiceStack) (*platform.ServiceStack, error) {
+func resolveServiceID(projectID, hostname string, services []platform.ServiceStack) (*platform.ServiceStack, error) {
 	svc := findServiceByHostname(services, hostname)
 	if svc == nil {
 		return nil, output.Err(platform.ErrServiceNotFound,

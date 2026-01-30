@@ -4,6 +4,8 @@ import (
 	"testing"
 )
 
+const testServiceHostnameAPI = "api"
+
 func TestFlow_ImportServices(t *testing.T) {
 	h := NewHarness(t)
 	FixtureEmptyProject(h)
@@ -53,7 +55,7 @@ func TestFlow_DeleteServiceWithConfirm(t *testing.T) {
 	initialCount := len(services)
 
 	// Delete api
-	r = h.MustRun("delete --service api --confirm")
+	r = h.MustRun("delete --service " + testServiceHostnameAPI + " --confirm")
 	r.AssertType("async")
 
 	// Discover — should have one fewer service
@@ -66,7 +68,7 @@ func TestFlow_DeleteServiceWithConfirm(t *testing.T) {
 	// Verify "api" is gone
 	for _, s := range services {
 		svc := s.(map[string]interface{})
-		if svc["hostname"] == "api" {
+		if svc["hostname"] == testServiceHostnameAPI {
 			t.Error("api service should have been deleted")
 		}
 	}
@@ -76,7 +78,7 @@ func TestFlow_DeleteWithoutConfirm(t *testing.T) {
 	h := NewHarness(t)
 	FixtureFullProject(h)
 
-	r := h.Run("delete --service api")
+	r := h.Run("delete --service " + testServiceHostnameAPI)
 	r.AssertType("error")
 	r.AssertErrorCode("CONFIRM_REQUIRED")
 	r.AssertExitCode(3)

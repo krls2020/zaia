@@ -185,10 +185,10 @@ func TestErr_BasicError(t *testing.T) {
 func TestErr_WithContext(t *testing.T) {
 	var buf bytes.Buffer
 	ctx := map[string]interface{}{
-		"projectId": "abc-123",
+		"projectId":        "abc-123",
 		"requestedService": "apistage",
 	}
-	ErrTo(&buf, "SERVICE_NOT_FOUND", "Service 'apistage' not found", "Available services: api, db", ctx)
+	_ = ErrTo(&buf, "SERVICE_NOT_FOUND", "Service 'apistage' not found", "Available services: api, db", ctx)
 
 	var resp ErrorResponse
 	if err := json.Unmarshal(buf.Bytes(), &resp); err != nil {
@@ -201,7 +201,7 @@ func TestErr_WithContext(t *testing.T) {
 
 func TestErr_NoSuggestionOmitted(t *testing.T) {
 	var buf bytes.Buffer
-	ErrTo(&buf, "API_ERROR", "Internal error", "", nil)
+	_ = ErrTo(&buf, "API_ERROR", "Internal error", "", nil)
 
 	var raw map[string]interface{}
 	if err := json.Unmarshal(buf.Bytes(), &raw); err != nil {

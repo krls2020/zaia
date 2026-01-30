@@ -258,7 +258,7 @@ func (z *ZeropsClient) SetAutoscaling(ctx context.Context, serviceID string, par
 	}
 	// API returns ProcessNil — process may be nil for immediate sync operations.
 	if out.Process == nil {
-		return nil, nil
+		return nil, nil //nolint:nilnil // intentional: nil process means sync (no async process)
 	}
 	proc := mapProcess(*out.Process)
 	return &proc, nil
@@ -557,11 +557,11 @@ func mapProcess(p output.Process) Process {
 	switch status {
 	case "DONE":
 		status = "FINISHED"
-	case "CANCELLED":
+	case statusCancelled:
 		status = "CANCELED"
 	}
 
-	var serviceStacks []ServiceStackRef
+	serviceStacks := make([]ServiceStackRef, 0, len(p.ServiceStacks))
 	for _, ss := range p.ServiceStacks {
 		serviceStacks = append(serviceStacks, ServiceStackRef{
 			ID:   ss.Id.TypedString().String(),

@@ -26,16 +26,17 @@ func NewImport(storagePath string, client platform.Client) *cobra.Command {
 			dryRun, _ := cmd.Flags().GetBool("dry-run")
 
 			var content string
-			if contentStr != "" {
+			switch {
+			case contentStr != "":
 				content = contentStr
-			} else if file != "" {
+			case file != "":
 				data, err := os.ReadFile(file)
 				if err != nil {
 					return output.Err(platform.ErrFileNotFound,
 						"Cannot read file: "+file, "", nil)
 				}
 				content = string(data)
-			} else {
+			default:
 				return output.Err(platform.ErrInvalidParameter,
 					"--file or --content is required",
 					"Run: zaia import --file services.yml or zaia import --content '<yaml>'", nil)

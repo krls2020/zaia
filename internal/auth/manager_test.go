@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"context"
 	"path/filepath"
 	"testing"
 
@@ -27,7 +26,7 @@ func TestLogin_SingleProject_Success(t *testing.T) {
 		{ID: "abc-123", Name: "my-app", Status: "ACTIVE"},
 	})
 
-	result, err := mgr.Login(context.Background(), "valid-token", LoginOptions{
+	result, err := mgr.Login(t.Context(), "valid-token", LoginOptions{
 		URL: "api.zerops.io",
 	})
 	if err != nil {
@@ -65,7 +64,7 @@ func TestLogin_NoProject_ReturnsTokenNoProjectError(t *testing.T) {
 		Email:    "john@test.com",
 	}).WithProjects([]platform.Project{})
 
-	_, err := mgr.Login(context.Background(), "token", LoginOptions{URL: "api.zerops.io"})
+	_, err := mgr.Login(t.Context(), "token", LoginOptions{URL: "api.zerops.io"})
 	if err == nil {
 		t.Fatal("expected error")
 	}
@@ -91,7 +90,7 @@ func TestLogin_MultiProject_ReturnsTokenMultiProjectError(t *testing.T) {
 		{ID: "p3", Name: "app3"},
 	})
 
-	_, err := mgr.Login(context.Background(), "token", LoginOptions{URL: "api.zerops.io"})
+	_, err := mgr.Login(t.Context(), "token", LoginOptions{URL: "api.zerops.io"})
 	if err == nil {
 		t.Fatal("expected error")
 	}
@@ -113,7 +112,7 @@ func TestLogin_InvalidToken_ReturnsAuthInvalidTokenError(t *testing.T) {
 	mgr, mock := newTestManager(t)
 	mock.WithError("GetUserInfo", &platform.HTTPError{StatusCode: 401, Body: "unauthorized"})
 
-	_, err := mgr.Login(context.Background(), "invalid", LoginOptions{URL: "api.zerops.io"})
+	_, err := mgr.Login(t.Context(), "invalid", LoginOptions{URL: "api.zerops.io"})
 	if err == nil {
 		t.Fatal("expected error")
 	}
@@ -132,7 +131,7 @@ func TestLogin_NetworkError_ReturnsAuthAPIError(t *testing.T) {
 	mock.WithUserInfo(&platform.UserInfo{ID: "u1", FullName: "John", Email: "john@test.com"}).
 		WithError("ListProjects", &platform.HTTPError{StatusCode: 500, Body: "server error"})
 
-	_, err := mgr.Login(context.Background(), "token", LoginOptions{URL: "api.zerops.io"})
+	_, err := mgr.Login(t.Context(), "token", LoginOptions{URL: "api.zerops.io"})
 	if err == nil {
 		t.Fatal("expected error")
 	}
@@ -152,7 +151,7 @@ func TestLogout_ClearsStorage(t *testing.T) {
 		WithProjects([]platform.Project{{ID: "p1", Name: "app"}})
 
 	// Login first
-	_, err := mgr.Login(context.Background(), "token", LoginOptions{URL: "api.zerops.io"})
+	_, err := mgr.Login(t.Context(), "token", LoginOptions{URL: "api.zerops.io"})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -197,7 +196,7 @@ func TestGetStatus_Authenticated(t *testing.T) {
 	mock.WithUserInfo(&platform.UserInfo{ID: "u1", FullName: "John", Email: "john@test.com"}).
 		WithProjects([]platform.Project{{ID: "p1", Name: "app"}})
 
-	_, err := mgr.Login(context.Background(), "token", LoginOptions{URL: "api.zerops.io"})
+	_, err := mgr.Login(t.Context(), "token", LoginOptions{URL: "api.zerops.io"})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -238,7 +237,7 @@ func TestLogin_DefaultRegion(t *testing.T) {
 		WithProjects([]platform.Project{{ID: "p1", Name: "app"}})
 
 	// No URL specified — should use default
-	result, err := mgr.Login(context.Background(), "token", LoginOptions{})
+	result, err := mgr.Login(t.Context(), "token", LoginOptions{})
 	if err != nil {
 		t.Fatal(err)
 	}

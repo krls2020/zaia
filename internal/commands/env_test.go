@@ -31,7 +31,7 @@ func TestEnvGet_Service(t *testing.T) {
 	}
 
 	var resp map[string]interface{}
-	json.Unmarshal(stdout.Bytes(), &resp)
+	_ = json.Unmarshal(stdout.Bytes(), &resp)
 	data := resp["data"].(map[string]interface{})
 	if data["scope"] != "service" {
 		t.Errorf("scope = %v, want service", data["scope"])
@@ -62,7 +62,7 @@ func TestEnvGet_Project(t *testing.T) {
 	}
 
 	var resp map[string]interface{}
-	json.Unmarshal(stdout.Bytes(), &resp)
+	_ = json.Unmarshal(stdout.Bytes(), &resp)
 	data := resp["data"].(map[string]interface{})
 	if data["scope"] != "project" {
 		t.Errorf("scope = %v, want project", data["scope"])
@@ -87,7 +87,7 @@ func TestEnvSet_Service(t *testing.T) {
 	}
 
 	var resp map[string]interface{}
-	json.Unmarshal(stdout.Bytes(), &resp)
+	_ = json.Unmarshal(stdout.Bytes(), &resp)
 	if resp["type"] != "async" {
 		t.Errorf("type = %v, want async", resp["type"])
 	}
@@ -146,7 +146,7 @@ func TestEnvSet_InvalidFormat(t *testing.T) {
 	}
 
 	var resp map[string]interface{}
-	json.Unmarshal(stdout.Bytes(), &resp)
+	_ = json.Unmarshal(stdout.Bytes(), &resp)
 	if resp["code"] != "INVALID_ENV_FORMAT" {
 		t.Errorf("code = %v, want INVALID_ENV_FORMAT", resp["code"])
 	}
@@ -173,7 +173,7 @@ func TestEnvDelete_Service(t *testing.T) {
 	}
 
 	var resp map[string]interface{}
-	json.Unmarshal(stdout.Bytes(), &resp)
+	_ = json.Unmarshal(stdout.Bytes(), &resp)
 	if resp["type"] != "async" {
 		t.Errorf("type = %v, want async", resp["type"])
 	}
@@ -196,7 +196,7 @@ func TestEnvGet_NoScope_Error(t *testing.T) {
 	}
 
 	var resp map[string]interface{}
-	json.Unmarshal(stdout.Bytes(), &resp)
+	_ = json.Unmarshal(stdout.Bytes(), &resp)
 	if resp["code"] != "SERVICE_REQUIRED" {
 		t.Errorf("code = %v, want SERVICE_REQUIRED", resp["code"])
 	}

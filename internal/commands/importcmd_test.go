@@ -54,7 +54,7 @@ func TestImportCmd_Success(t *testing.T) {
 	}
 
 	var resp map[string]interface{}
-	json.Unmarshal(stdout.Bytes(), &resp)
+	_ = json.Unmarshal(stdout.Bytes(), &resp)
 	if resp["type"] != "async" {
 		t.Errorf("type = %v, want async", resp["type"])
 	}
@@ -85,7 +85,7 @@ func TestImportCmd_DryRun(t *testing.T) {
 	}
 
 	var resp map[string]interface{}
-	json.Unmarshal(stdout.Bytes(), &resp)
+	_ = json.Unmarshal(stdout.Bytes(), &resp)
 	if resp["type"] != "sync" {
 		t.Errorf("type = %v, want sync", resp["type"])
 	}
@@ -118,7 +118,7 @@ services:
 	}
 
 	var resp map[string]interface{}
-	json.Unmarshal(stdout.Bytes(), &resp)
+	_ = json.Unmarshal(stdout.Bytes(), &resp)
 	if resp["code"] != "IMPORT_HAS_PROJECT" {
 		t.Errorf("code = %v, want IMPORT_HAS_PROJECT", resp["code"])
 	}
@@ -142,7 +142,7 @@ func TestImportCmd_FromFile(t *testing.T) {
 
 	dir := t.TempDir()
 	yamlPath := filepath.Join(dir, "services.yml")
-	os.WriteFile(yamlPath, []byte("services:\n  - hostname: api\n    type: nodejs@22\n"), 0644)
+	_ = os.WriteFile(yamlPath, []byte("services:\n  - hostname: api\n    type: nodejs@22\n"), 0644)
 
 	cmd := NewImport(storagePath, mock)
 	cmd.SetArgs([]string{"--file", yamlPath})
@@ -157,7 +157,7 @@ func TestImportCmd_FromFile(t *testing.T) {
 	}
 
 	var resp map[string]interface{}
-	json.Unmarshal(stdout.Bytes(), &resp)
+	_ = json.Unmarshal(stdout.Bytes(), &resp)
 	if resp["type"] != "async" {
 		t.Errorf("type = %v, want async", resp["type"])
 	}
@@ -180,7 +180,7 @@ func TestImportCmd_NoInput_Error(t *testing.T) {
 	}
 
 	var resp map[string]interface{}
-	json.Unmarshal(stdout.Bytes(), &resp)
+	_ = json.Unmarshal(stdout.Bytes(), &resp)
 	if resp["code"] != "INVALID_PARAMETER" {
 		t.Errorf("code = %v, want INVALID_PARAMETER", resp["code"])
 	}

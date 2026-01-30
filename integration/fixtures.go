@@ -37,28 +37,28 @@ func FixtureFullProject(h *Harness) {
 		WithProject(&platform.Project{ID: "proj-1", Name: "test-project", Status: "ACTIVE"}).
 		WithServices([]platform.ServiceStack{
 			{
-				ID:        "svc-api",
-				Name:      "api",
-				ProjectID: "proj-1",
+				ID:                   "svc-api",
+				Name:                 "api",
+				ProjectID:            "proj-1",
 				ServiceStackTypeInfo: platform.ServiceTypeInfo{ServiceStackTypeVersionName: "nodejs@22"},
-				Status:    "ACTIVE",
-				Created:   "2024-01-01T00:00:00Z",
+				Status:               "ACTIVE",
+				Created:              "2024-01-01T00:00:00Z",
 			},
 			{
-				ID:        "svc-db",
-				Name:      "db",
-				ProjectID: "proj-1",
+				ID:                   "svc-db",
+				Name:                 "db",
+				ProjectID:            "proj-1",
 				ServiceStackTypeInfo: platform.ServiceTypeInfo{ServiceStackTypeVersionName: "postgresql@16"},
-				Status:    "ACTIVE",
-				Created:   "2024-01-01T00:00:00Z",
+				Status:               "ACTIVE",
+				Created:              "2024-01-01T00:00:00Z",
 			},
 			{
-				ID:        "svc-cache",
-				Name:      "cache",
-				ProjectID: "proj-1",
+				ID:                   "svc-cache",
+				Name:                 "cache",
+				ProjectID:            "proj-1",
 				ServiceStackTypeInfo: platform.ServiceTypeInfo{ServiceStackTypeVersionName: "valkey@8"},
-				Status:    "ACTIVE",
-				Created:   "2024-01-01T00:00:00Z",
+				Status:               "ACTIVE",
+				Created:              "2024-01-01T00:00:00Z",
 			},
 		})
 }
@@ -72,12 +72,12 @@ func FixtureStoppedService(h *Harness) {
 		WithProject(&platform.Project{ID: "proj-1", Name: "test-project", Status: "ACTIVE"}).
 		WithServices([]platform.ServiceStack{
 			{
-				ID:        "svc-api",
-				Name:      "api",
-				ProjectID: "proj-1",
+				ID:                   "svc-api",
+				Name:                 "api",
+				ProjectID:            "proj-1",
 				ServiceStackTypeInfo: platform.ServiceTypeInfo{ServiceStackTypeVersionName: "nodejs@22"},
-				Status:    "STOPPED",
-				Created:   "2024-01-01T00:00:00Z",
+				Status:               statusStopped,
+				Created:              "2024-01-01T00:00:00Z",
 			},
 		})
 }

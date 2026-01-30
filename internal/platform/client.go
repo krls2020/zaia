@@ -79,16 +79,16 @@ type Project struct {
 
 // ServiceStack represents a Zerops service.
 type ServiceStack struct {
-	ID                   string              `json:"id"`
-	Name                 string              `json:"name"` // hostname
-	ProjectID            string              `json:"projectId"`
-	ServiceStackTypeInfo ServiceTypeInfo     `json:"serviceStackTypeInfo"`
-	Status               string              `json:"status"`
-	Mode                 string              `json:"mode"` // HA, NON_HA
-	Ports                []Port              `json:"ports,omitempty"`
-	CustomAutoscaling    *CustomAutoscaling  `json:"customAutoscaling,omitempty"`
-	Created              string              `json:"created"`
-	LastUpdate           string              `json:"lastUpdate,omitempty"`
+	ID                   string             `json:"id"`
+	Name                 string             `json:"name"` // hostname
+	ProjectID            string             `json:"projectId"`
+	ServiceStackTypeInfo ServiceTypeInfo    `json:"serviceStackTypeInfo"`
+	Status               string             `json:"status"`
+	Mode                 string             `json:"mode"` // HA, NON_HA
+	Ports                []Port             `json:"ports,omitempty"`
+	CustomAutoscaling    *CustomAutoscaling `json:"customAutoscaling,omitempty"`
+	Created              string             `json:"created"`
+	LastUpdate           string             `json:"lastUpdate,omitempty"`
 }
 
 // ServiceTypeInfo contains service type details.
@@ -119,29 +119,29 @@ type CustomAutoscaling struct {
 
 // AutoscalingParams maps CLI flags to API request.
 type AutoscalingParams struct {
-	HorizontalMinCount *int32
-	HorizontalMaxCount *int32
-	VerticalCpuMode    *string
-	VerticalStartCpu   *int32
-	VerticalMinCpu     *int32
-	VerticalMaxCpu     *int32
-	VerticalMinRam     *float64
-	VerticalMaxRam     *float64
-	VerticalMinDisk    *float64
-	VerticalMaxDisk    *float64
+	HorizontalMinCount  *int32
+	HorizontalMaxCount  *int32
+	VerticalCpuMode     *string
+	VerticalStartCpu    *int32
+	VerticalMinCpu      *int32
+	VerticalMaxCpu      *int32
+	VerticalMinRam      *float64
+	VerticalMaxRam      *float64
+	VerticalMinDisk     *float64
+	VerticalMaxDisk     *float64
 	VerticalSwapEnabled *bool
 }
 
 // Process represents an async operation tracked by Zerops.
 type Process struct {
-	ID            string             `json:"id"`
-	ActionName    string             `json:"actionName"`
-	Status        string             `json:"status"` // PENDING, RUNNING, DONE, FAILED, CANCELLED
-	ServiceStacks []ServiceStackRef  `json:"serviceStacks,omitempty"`
-	Created       string             `json:"created"`
-	Started       *string            `json:"started,omitempty"`
-	Finished      *string            `json:"finished,omitempty"`
-	FailReason    *string            `json:"failReason,omitempty"`
+	ID            string            `json:"id"`
+	ActionName    string            `json:"actionName"`
+	Status        string            `json:"status"` // PENDING, RUNNING, DONE, FAILED, CANCELLED
+	ServiceStacks []ServiceStackRef `json:"serviceStacks,omitempty"`
+	Created       string            `json:"created"`
+	Started       *string           `json:"started,omitempty"`
+	Finished      *string           `json:"finished,omitempty"`
+	FailReason    *string           `json:"failReason,omitempty"`
 }
 
 // ServiceStackRef is a lightweight service reference in a process.
@@ -159,8 +159,8 @@ type EnvVar struct {
 
 // ImportResult represents the result of an import operation.
 type ImportResult struct {
-	ProjectID     string                `json:"projectId"`
-	ProjectName   string                `json:"projectName"`
+	ProjectID     string                 `json:"projectId"`
+	ProjectName   string                 `json:"projectName"`
 	ServiceStacks []ImportedServiceStack `json:"serviceStacks"`
 }
 

@@ -72,7 +72,7 @@ func (f *ZeropsLogFetcher) FetchLogs(ctx context.Context, access *LogAccess, par
 
 	logURL.RawQuery = q.Encode()
 
-	req, err := http.NewRequestWithContext(ctx, "GET", logURL.String(), nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, logURL.String(), nil)
 	if err != nil {
 		return nil, NewPlatformError(ErrAPIError, fmt.Sprintf("failed to create log request: %v", err), "")
 	}

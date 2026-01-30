@@ -33,7 +33,7 @@ func newLifecycleCmd(storagePath string, client platform.Client, action string) 
 				return output.Err(platform.ErrAPIError, err.Error(), "", nil)
 			}
 
-			svc, err := resolveServiceID(client, creds.ProjectID, hostname, services)
+			svc, err := resolveServiceID(creds.ProjectID, hostname, services)
 			if err != nil {
 				return err
 			}
@@ -101,7 +101,7 @@ func NewScale(storagePath string, client platform.Client) *cobra.Command {
 				return output.Err(platform.ErrAPIError, err.Error(), "", nil)
 			}
 
-			svc, err := resolveServiceID(client, creds.ProjectID, hostname, services)
+			svc, err := resolveServiceID(creds.ProjectID, hostname, services)
 			if err != nil {
 				return err
 			}

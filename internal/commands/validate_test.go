@@ -20,7 +20,7 @@ func TestValidateCmd_ValidZeropsYml(t *testing.T) {
           httpSupport: true
 `
 	yamlPath := filepath.Join(dir, "zerops.yml")
-	os.WriteFile(yamlPath, []byte(yamlContent), 0644)
+	_ = os.WriteFile(yamlPath, []byte(yamlContent), 0644)
 
 	cmd := NewValidate()
 	cmd.SetArgs([]string{"--file", yamlPath})
@@ -35,7 +35,7 @@ func TestValidateCmd_ValidZeropsYml(t *testing.T) {
 	}
 
 	var resp map[string]interface{}
-	json.Unmarshal(stdout.Bytes(), &resp)
+	_ = json.Unmarshal(stdout.Bytes(), &resp)
 	if resp["type"] != "sync" {
 		t.Errorf("type = %v, want sync", resp["type"])
 	}
@@ -49,7 +49,7 @@ func TestValidateCmd_InvalidZeropsYml(t *testing.T) {
 	dir := t.TempDir()
 	yamlContent := `somethingWrong: yes`
 	yamlPath := filepath.Join(dir, "zerops.yml")
-	os.WriteFile(yamlPath, []byte(yamlContent), 0644)
+	_ = os.WriteFile(yamlPath, []byte(yamlContent), 0644)
 
 	cmd := NewValidate()
 	cmd.SetArgs([]string{"--file", yamlPath, "--type", "zerops.yml"})
@@ -64,7 +64,7 @@ func TestValidateCmd_InvalidZeropsYml(t *testing.T) {
 	}
 
 	var resp map[string]interface{}
-	json.Unmarshal(stdout.Bytes(), &resp)
+	_ = json.Unmarshal(stdout.Bytes(), &resp)
 	if resp["code"] != "INVALID_ZEROPS_YML" {
 		t.Errorf("code = %v, want INVALID_ZEROPS_YML", resp["code"])
 	}
@@ -79,7 +79,7 @@ func TestValidateCmd_ValidImportYml(t *testing.T) {
     type: postgresql@16
 `
 	yamlPath := filepath.Join(dir, "import.yml")
-	os.WriteFile(yamlPath, []byte(yamlContent), 0644)
+	_ = os.WriteFile(yamlPath, []byte(yamlContent), 0644)
 
 	cmd := NewValidate()
 	cmd.SetArgs([]string{"--file", yamlPath})
@@ -94,7 +94,7 @@ func TestValidateCmd_ValidImportYml(t *testing.T) {
 	}
 
 	var resp map[string]interface{}
-	json.Unmarshal(stdout.Bytes(), &resp)
+	_ = json.Unmarshal(stdout.Bytes(), &resp)
 	data := resp["data"].(map[string]interface{})
 	if data["valid"] != true {
 		t.Errorf("valid = %v, want true", data["valid"])
@@ -113,7 +113,7 @@ services:
     type: nodejs@22
 `
 	yamlPath := filepath.Join(dir, "import.yml")
-	os.WriteFile(yamlPath, []byte(yamlContent), 0644)
+	_ = os.WriteFile(yamlPath, []byte(yamlContent), 0644)
 
 	cmd := NewValidate()
 	cmd.SetArgs([]string{"--file", yamlPath})
@@ -128,7 +128,7 @@ services:
 	}
 
 	var resp map[string]interface{}
-	json.Unmarshal(stdout.Bytes(), &resp)
+	_ = json.Unmarshal(stdout.Bytes(), &resp)
 	if resp["code"] != "IMPORT_HAS_PROJECT" {
 		t.Errorf("code = %v, want IMPORT_HAS_PROJECT", resp["code"])
 	}
@@ -152,7 +152,7 @@ func TestValidateCmd_InlineContent(t *testing.T) {
 	}
 
 	var resp map[string]interface{}
-	json.Unmarshal(stdout.Bytes(), &resp)
+	_ = json.Unmarshal(stdout.Bytes(), &resp)
 	data := resp["data"].(map[string]interface{})
 	if data["valid"] != true {
 		t.Errorf("valid = %v, want true", data["valid"])
@@ -173,7 +173,7 @@ func TestValidateCmd_FileNotFound(t *testing.T) {
 	}
 
 	var resp map[string]interface{}
-	json.Unmarshal(stdout.Bytes(), &resp)
+	_ = json.Unmarshal(stdout.Bytes(), &resp)
 	if resp["code"] != "FILE_NOT_FOUND" {
 		t.Errorf("code = %v, want FILE_NOT_FOUND", resp["code"])
 	}

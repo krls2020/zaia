@@ -27,7 +27,7 @@ func TestStartCmd_Success(t *testing.T) {
 	}
 
 	var resp map[string]interface{}
-	json.Unmarshal(stdout.Bytes(), &resp)
+	_ = json.Unmarshal(stdout.Bytes(), &resp)
 	if resp["type"] != "async" {
 		t.Errorf("type = %v, want async", resp["type"])
 	}
@@ -59,7 +59,7 @@ func TestStopCmd_Success(t *testing.T) {
 	}
 
 	var resp map[string]interface{}
-	json.Unmarshal(stdout.Bytes(), &resp)
+	_ = json.Unmarshal(stdout.Bytes(), &resp)
 	p := resp["processes"].([]interface{})[0].(map[string]interface{})
 	if p["actionName"] != "stop" {
 		t.Errorf("actionName = %v, want stop", p["actionName"])
@@ -84,7 +84,7 @@ func TestRestartCmd_Success(t *testing.T) {
 	}
 
 	var resp map[string]interface{}
-	json.Unmarshal(stdout.Bytes(), &resp)
+	_ = json.Unmarshal(stdout.Bytes(), &resp)
 	p := resp["processes"].([]interface{})[0].(map[string]interface{})
 	if p["actionName"] != "restart" {
 		t.Errorf("actionName = %v, want restart", p["actionName"])
@@ -110,7 +110,7 @@ func TestScaleCmd_Success(t *testing.T) {
 
 	// Mock returns nil process (sync)
 	var resp map[string]interface{}
-	json.Unmarshal(stdout.Bytes(), &resp)
+	_ = json.Unmarshal(stdout.Bytes(), &resp)
 	if resp["type"] != "sync" {
 		t.Errorf("type = %v, want sync (nil process)", resp["type"])
 	}
@@ -138,7 +138,7 @@ func TestScaleCmd_NoParams_Error(t *testing.T) {
 	}
 
 	var resp map[string]interface{}
-	json.Unmarshal(stdout.Bytes(), &resp)
+	_ = json.Unmarshal(stdout.Bytes(), &resp)
 	if resp["code"] != "INVALID_SCALING" {
 		t.Errorf("code = %v, want INVALID_SCALING", resp["code"])
 	}
@@ -162,7 +162,7 @@ func TestScaleCmd_InvalidMinMax_Error(t *testing.T) {
 	}
 
 	var resp map[string]interface{}
-	json.Unmarshal(stdout.Bytes(), &resp)
+	_ = json.Unmarshal(stdout.Bytes(), &resp)
 	if resp["code"] != "INVALID_SCALING" {
 		t.Errorf("code = %v, want INVALID_SCALING", resp["code"])
 	}
@@ -186,7 +186,7 @@ func TestLifecycleCmd_ServiceNotFound(t *testing.T) {
 	}
 
 	var resp map[string]interface{}
-	json.Unmarshal(stdout.Bytes(), &resp)
+	_ = json.Unmarshal(stdout.Bytes(), &resp)
 	if resp["code"] != "SERVICE_NOT_FOUND" {
 		t.Errorf("code = %v, want SERVICE_NOT_FOUND", resp["code"])
 	}

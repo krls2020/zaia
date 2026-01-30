@@ -41,7 +41,7 @@ func NewSubdomain(storagePath string, client platform.Client) *cobra.Command {
 				return output.Err(platform.ErrAPIError, err.Error(), "", nil)
 			}
 
-			svc, err := resolveServiceID(client, creds.ProjectID, hostname, services)
+			svc, err := resolveServiceID(creds.ProjectID, hostname, services)
 			if err != nil {
 				return err
 			}

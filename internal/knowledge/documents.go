@@ -25,11 +25,11 @@ func loadFromEmbedded() map[string]*Document {
 	docs := make(map[string]*Document)
 	_ = fs.WalkDir(contentFS, "embed", func(path string, d fs.DirEntry, err error) error {
 		if err != nil || d.IsDir() || !strings.HasSuffix(path, ".md") {
-			return nil
+			return nil //nolint:nilerr // intentional: continue walking on individual file errors
 		}
 		data, err := contentFS.ReadFile(path)
 		if err != nil {
-			return nil
+			return nil //nolint:nilerr // intentional: continue walking on individual file errors
 		}
 		doc := parseDocument(path, string(data))
 		docs[doc.URI] = doc

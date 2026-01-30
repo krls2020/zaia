@@ -1,6 +1,8 @@
 package commands
 
 import (
+	"errors"
+
 	"github.com/spf13/cobra"
 	"github.com/zeropsio/zaia/internal/auth"
 	"github.com/zeropsio/zaia/internal/output"
@@ -19,7 +21,8 @@ func NewStatus(storageDir string) *cobra.Command {
 
 			data, err := mgr.GetStatus()
 			if err != nil {
-				if authErr, ok := err.(*auth.AuthError); ok {
+				var authErr *auth.AuthError
+				if errors.As(err, &authErr) {
 					return output.Err(authErr.Code, authErr.Message, authErr.Suggestion, nil)
 				}
 				return output.Err(platform.ErrAuthRequired, err.Error(), "Run: zaia login <token>", nil)

@@ -8,6 +8,8 @@ import (
 	"github.com/blevesearch/bleve/v2"
 )
 
+const analyzerStandard = "standard"
+
 // SearchResult represents a single search result.
 type SearchResult struct {
 	URI     string  `json:"uri"`
@@ -62,16 +64,16 @@ func NewStore() *Store {
 
 func (s *Store) buildIndex() {
 	titleMapping := bleve.NewTextFieldMapping()
-	titleMapping.Analyzer = "standard"
+	titleMapping.Analyzer = analyzerStandard
 	titleMapping.Store = false
 	titleMapping.IncludeInAll = true
 
 	kwMapping := bleve.NewTextFieldMapping()
-	kwMapping.Analyzer = "standard"
+	kwMapping.Analyzer = analyzerStandard
 	kwMapping.Store = false
 
 	contentMapping := bleve.NewTextFieldMapping()
-	contentMapping.Analyzer = "standard"
+	contentMapping.Analyzer = analyzerStandard
 	contentMapping.Store = false
 
 	docMapping := bleve.NewDocumentMapping()
@@ -81,7 +83,7 @@ func (s *Store) buildIndex() {
 
 	indexMapping := bleve.NewIndexMapping()
 	indexMapping.DefaultMapping = docMapping
-	indexMapping.DefaultAnalyzer = "standard"
+	indexMapping.DefaultAnalyzer = analyzerStandard
 
 	index, err := bleve.NewMemOnly(indexMapping)
 	if err != nil {
@@ -133,7 +135,7 @@ func (s *Store) Search(query string, limit int) []SearchResult {
 		return nil
 	}
 
-	var out []SearchResult
+	out := make([]SearchResult, 0, len(results.Hits))
 	for _, hit := range results.Hits {
 		doc := s.docs[hit.ID]
 		if doc == nil {
@@ -151,7 +153,7 @@ func (s *Store) Search(query string, limit int) []SearchResult {
 
 // List returns all available resources for MCP list_resources().
 func (s *Store) List() []Resource {
-	var resources []Resource
+	resources := make([]Resource, 0, len(s.docs))
 	for _, doc := range s.docs {
 		resources = append(resources, Resource{
 			URI:         doc.URI,

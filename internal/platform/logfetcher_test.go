@@ -1,7 +1,6 @@
 package platform
 
 import (
-	"context"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -16,7 +15,10 @@ func TestLogFetcher_FetchLogs_Success(t *testing.T) {
 			{ID: "2", Timestamp: "2025-01-01T00:00:01Z", Hostname: "api-0", Message: "first", SeverityLabel: "error"},
 		},
 	}
-	body, _ := json.Marshal(response)
+	body, err := json.Marshal(response)
+	if err != nil {
+		t.Fatalf("failed to marshal response: %v", err)
+	}
 
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Query().Get("accessToken") != "test-token" {
@@ -31,7 +33,7 @@ func TestLogFetcher_FetchLogs_Success(t *testing.T) {
 	defer srv.Close()
 
 	fetcher := NewLogFetcher()
-	entries, err := fetcher.FetchLogs(context.Background(), &LogAccess{
+	entries, err := fetcher.FetchLogs(t.Context(), &LogAccess{
 		URL:         srv.URL,
 		AccessToken: "test-token",
 	}, LogFetchParams{
@@ -71,7 +73,7 @@ func TestLogFetcher_FetchLogs_QueryParams(t *testing.T) {
 	fetcher := NewLogFetcher()
 	since := time.Date(2025, 1, 15, 10, 0, 0, 0, time.UTC)
 
-	_, err := fetcher.FetchLogs(context.Background(), &LogAccess{
+	_, err := fetcher.FetchLogs(t.Context(), &LogAccess{
 		URL:         srv.URL,
 		AccessToken: "tok",
 	}, LogFetchParams{
@@ -113,7 +115,7 @@ func TestLogFetcher_FetchLogs_ServerError(t *testing.T) {
 	defer srv.Close()
 
 	fetcher := NewLogFetcher()
-	_, err := fetcher.FetchLogs(context.Background(), &LogAccess{
+	_, err := fetcher.FetchLogs(t.Context(), &LogAccess{
 		URL:         srv.URL,
 		AccessToken: "tok",
 	}, LogFetchParams{Limit: 10})
@@ -124,7 +126,7 @@ func TestLogFetcher_FetchLogs_ServerError(t *testing.T) {
 
 func TestLogFetcher_FetchLogs_NilAccess(t *testing.T) {
 	fetcher := NewLogFetcher()
-	_, err := fetcher.FetchLogs(context.Background(), nil, LogFetchParams{})
+	_, err := fetcher.FetchLogs(t.Context(), nil, LogFetchParams{})
 	if err == nil {
 		t.Fatal("expected error for nil access")
 	}
@@ -139,7 +141,7 @@ func TestLogFetcher_FetchLogs_URLPrefix(t *testing.T) {
 	defer srv.Close()
 
 	fetcher := NewLogFetcher()
-	entries, err := fetcher.FetchLogs(context.Background(), &LogAccess{
+	entries, err := fetcher.FetchLogs(t.Context(), &LogAccess{
 		URL:         "GET " + srv.URL,
 		AccessToken: "tok",
 	}, LogFetchParams{Limit: 10})
@@ -163,7 +165,10 @@ func TestLogFetcher_FetchLogs_LimitApplied(t *testing.T) {
 		}
 	}
 	response := logAPIResponse{Items: items}
-	body, _ := json.Marshal(response)
+	body, err := json.Marshal(response)
+	if err != nil {
+		t.Fatalf("failed to marshal response: %v", err)
+	}
 
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
@@ -172,7 +177,7 @@ func TestLogFetcher_FetchLogs_LimitApplied(t *testing.T) {
 	defer srv.Close()
 
 	fetcher := NewLogFetcher()
-	entries, err := fetcher.FetchLogs(context.Background(), &LogAccess{
+	entries, err := fetcher.FetchLogs(t.Context(), &LogAccess{
 		URL:         srv.URL,
 		AccessToken: "tok",
 	}, LogFetchParams{Limit: 2})
@@ -194,7 +199,7 @@ func TestLogFetcher_SeverityAllNotSent(t *testing.T) {
 	defer srv.Close()
 
 	fetcher := NewLogFetcher()
-	_, _ = fetcher.FetchLogs(context.Background(), &LogAccess{
+	_, _ = fetcher.FetchLogs(t.Context(), &LogAccess{
 		URL:         srv.URL,
 		AccessToken: "tok",
 	}, LogFetchParams{Severity: "all", Limit: 10})

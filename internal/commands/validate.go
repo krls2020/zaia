@@ -10,6 +10,11 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+const (
+	fileTypeZeropsYml = "zerops.yml"
+	fileTypeImportYml = "import.yml"
+)
+
 // NewValidate creates the validate command.
 func NewValidate() *cobra.Command {
 	cmd := &cobra.Command{
@@ -29,12 +34,12 @@ func NewValidate() *cobra.Command {
 				source = "inline"
 			} else {
 				if file == "" {
-					file = "zerops.yml"
+					file = fileTypeZeropsYml
 				}
 				var err error
 				content, err = os.ReadFile(file)
 				if err != nil {
-					if os.IsNotExist(err) && file == "zerops.yml" {
+					if os.IsNotExist(err) && file == fileTypeZeropsYml {
 						return output.Err(platform.ErrZeropsYmlNotFound,
 							"zerops.yml not found in current directory",
 							"Create zerops.yml or use --file to specify path", nil)
@@ -50,9 +55,9 @@ func NewValidate() *cobra.Command {
 			}
 
 			switch fileType {
-			case "zerops.yml":
+			case fileTypeZeropsYml:
 				return validateZeropsYml(content, source)
-			case "import.yml":
+			case fileTypeImportYml:
 				return validateImportYml(content, source)
 			default:
 				return output.Err(platform.ErrUnknownType,
@@ -64,7 +69,7 @@ func NewValidate() *cobra.Command {
 
 	cmd.Flags().String("file", "", "File to validate (default: zerops.yml)")
 	cmd.Flags().String("content", "", "Inline YAML content to validate")
-	cmd.Flags().String("type", "", "File type: zerops.yml or import.yml")
+	cmd.Flags().String("type", "", "File type: "+fileTypeZeropsYml+" or "+fileTypeImportYml)
 
 	return cmd
 }
@@ -72,23 +77,23 @@ func NewValidate() *cobra.Command {
 func detectYamlType(source string, content []byte) string {
 	// Detect by filename
 	if strings.Contains(source, "import") {
-		return "import.yml"
+		return fileTypeImportYml
 	}
 
 	// Detect by content structure
 	var parsed map[string]interface{}
 	if err := yaml.Unmarshal(content, &parsed); err != nil {
-		return "zerops.yml" // default
+		return fileTypeZeropsYml // default
 	}
 
 	if _, ok := parsed["services"]; ok {
-		return "import.yml"
+		return fileTypeImportYml
 	}
 	if _, ok := parsed["zerops"]; ok {
-		return "zerops.yml"
+		return fileTypeZeropsYml
 	}
 
-	return "zerops.yml" // default
+	return fileTypeZeropsYml // default
 }
 
 func validateZeropsYml(content []byte, source string) error {
@@ -145,7 +150,7 @@ func validateZeropsYml(content []byte, source string) error {
 	return output.Sync(map[string]interface{}{
 		"valid":    true,
 		"file":     source,
-		"type":     "zerops.yml",
+		"type":     fileTypeZeropsYml,
 		"warnings": []string{},
 		"info":     []string{},
 	})
@@ -197,7 +202,7 @@ func validateImportYml(content []byte, source string) error {
 	return output.Sync(map[string]interface{}{
 		"valid":    true,
 		"file":     source,
-		"type":     "import.yml",
+		"type":     fileTypeImportYml,
 		"warnings": []string{},
 		"info":     []string{},
 	})

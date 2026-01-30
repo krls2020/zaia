@@ -22,7 +22,7 @@ func TestSearchCmd_ReturnsResults(t *testing.T) {
 	}
 
 	var resp map[string]interface{}
-	json.Unmarshal(stdout.Bytes(), &resp)
+	_ = json.Unmarshal(stdout.Bytes(), &resp)
 	if resp["type"] != "sync" {
 		t.Errorf("type = %v, want sync", resp["type"])
 	}
@@ -63,7 +63,7 @@ func TestSearchCmd_UnsupportedService(t *testing.T) {
 	}
 
 	var resp map[string]interface{}
-	json.Unmarshal(stdout.Bytes(), &resp)
+	_ = json.Unmarshal(stdout.Bytes(), &resp)
 	data := resp["data"].(map[string]interface{})
 	suggestions := data["suggestions"].([]interface{})
 	if len(suggestions) == 0 {

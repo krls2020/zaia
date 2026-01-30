@@ -33,7 +33,7 @@ func TestLogsCmd_Success(t *testing.T) {
 	}
 
 	var resp map[string]interface{}
-	json.Unmarshal(stdout.Bytes(), &resp)
+	_ = json.Unmarshal(stdout.Bytes(), &resp)
 	data := resp["data"].(map[string]interface{})
 	entries := data["entries"].([]interface{})
 	if len(entries) != 2 {
@@ -63,7 +63,7 @@ func TestLogsCmd_InvalidSince(t *testing.T) {
 	}
 
 	var resp map[string]interface{}
-	json.Unmarshal(stdout.Bytes(), &resp)
+	_ = json.Unmarshal(stdout.Bytes(), &resp)
 	if resp["code"] != "INVALID_PARAMETER" {
 		t.Errorf("code = %v, want INVALID_PARAMETER", resp["code"])
 	}

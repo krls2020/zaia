@@ -488,9 +488,9 @@ func containsURI(results []SearchResult, uri string) bool {
 	return false
 }
 
-func containsURIInTop(results []SearchResult, uri string, n int) bool {
+func containsURIInTop(results []SearchResult, uri string, _ int) bool {
 	for i, r := range results {
-		if i >= n {
+		if i >= 3 {
 			break
 		}
 		if r.URI == uri {
@@ -501,7 +501,7 @@ func containsURIInTop(results []SearchResult, uri string, n int) bool {
 }
 
 func urisFromResults(results []SearchResult) []string {
-	var uris []string
+	uris := make([]string, 0, len(results))
 	for _, r := range results {
 		uris = append(uris, r.URI)
 	}

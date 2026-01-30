@@ -69,7 +69,7 @@ func newEnvGet(storagePath string, client platform.Client) *cobra.Command {
 			if err != nil {
 				return output.Err(platform.ErrAPIError, err.Error(), "", nil)
 			}
-			svc, err := resolveServiceID(client, creds.ProjectID, hostname, services)
+			svc, err := resolveServiceID(creds.ProjectID, hostname, services)
 			if err != nil {
 				return err
 			}
@@ -144,7 +144,7 @@ func newEnvSet(storagePath string, client platform.Client) *cobra.Command {
 			if err != nil {
 				return output.Err(platform.ErrAPIError, err.Error(), "", nil)
 			}
-			svc, err := resolveServiceID(client, creds.ProjectID, hostname, services)
+			svc, err := resolveServiceID(creds.ProjectID, hostname, services)
 			if err != nil {
 				return err
 			}
@@ -224,7 +224,7 @@ func newEnvDelete(storagePath string, client platform.Client) *cobra.Command {
 			if err != nil {
 				return output.Err(platform.ErrAPIError, err.Error(), "", nil)
 			}
-			svc, err := resolveServiceID(client, creds.ProjectID, hostname, services)
+			svc, err := resolveServiceID(creds.ProjectID, hostname, services)
 			if err != nil {
 				return err
 			}

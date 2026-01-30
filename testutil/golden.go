@@ -50,12 +50,24 @@ func AssertJSONEqual(t *testing.T, want, got string) {
 		t.Fatalf("invalid got JSON: %v\n%s", err, got)
 	}
 
-	wantNorm, _ := json.Marshal(wantVal)
-	gotNorm, _ := json.Marshal(gotVal)
+	wantNorm, err := json.Marshal(wantVal)
+	if err != nil {
+		t.Fatalf("failed to marshal want: %v", err)
+	}
+	gotNorm, err := json.Marshal(gotVal)
+	if err != nil {
+		t.Fatalf("failed to marshal got: %v", err)
+	}
 
 	if string(wantNorm) != string(gotNorm) {
-		wantPretty, _ := json.MarshalIndent(wantVal, "", "  ")
-		gotPretty, _ := json.MarshalIndent(gotVal, "", "  ")
+		wantPretty, err := json.MarshalIndent(wantVal, "", "  ")
+		if err != nil {
+			t.Fatalf("failed to marshal want (indent): %v", err)
+		}
+		gotPretty, err := json.MarshalIndent(gotVal, "", "  ")
+		if err != nil {
+			t.Fatalf("failed to marshal got (indent): %v", err)
+		}
 		t.Errorf("JSON mismatch:\nwant: %s\ngot:  %s", wantPretty, gotPretty)
 	}
 }

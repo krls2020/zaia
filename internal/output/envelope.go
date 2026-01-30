@@ -17,14 +17,14 @@ type SyncResponse struct {
 
 // AsyncResponse represents an initiated operation with processes.
 type AsyncResponse struct {
-	Type      string          `json:"type"`      // always "async"
-	Status    string          `json:"status"`    // always "initiated"
+	Type      string          `json:"type"`   // always "async"
+	Status    string          `json:"status"` // always "initiated"
 	Processes []ProcessOutput `json:"processes"`
 }
 
 // ErrorResponse represents an error.
 type ErrorResponse struct {
-	Type       string      `json:"type"`                 // always "error"
+	Type       string      `json:"type"` // always "error"
 	Code       string      `json:"code"`
 	Error      string      `json:"error"`
 	Suggestion string      `json:"suggestion,omitempty"`
@@ -115,7 +115,7 @@ func ErrTo(w io.Writer, code, message, suggestion string, ctx interface{}) error
 		Suggestion: suggestion,
 		Context:    ctx,
 	}
-	writeJSONTo(w, resp)
+	_ = writeJSONTo(w, resp)
 	return &ZaiaError{Message: message, Code: code}
 }
 
@@ -123,11 +123,11 @@ func ErrTo(w io.Writer, code, message, suggestion string, ctx interface{}) error
 // Maps API status names to ZAIA status names.
 func MapProcessToOutput(p *platform.Process, hostname string) ProcessOutput {
 	out := ProcessOutput{
-		ProcessID:  p.ID,
-		ActionName: p.ActionName,
-		Status:     mapProcessStatus(p.Status),
-		Created:    p.Created,
-		Finished:   p.Finished,
+		ProcessID:     p.ID,
+		ActionName:    p.ActionName,
+		Status:        mapProcessStatus(p.Status),
+		Created:       p.Created,
+		Finished:      p.Finished,
 		FailureReason: p.FailReason,
 	}
 

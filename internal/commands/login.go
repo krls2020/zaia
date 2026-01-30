@@ -1,6 +1,8 @@
 package commands
 
 import (
+	"errors"
+
 	"github.com/spf13/cobra"
 	"github.com/zeropsio/zaia/internal/auth"
 	"github.com/zeropsio/zaia/internal/output"
@@ -36,7 +38,8 @@ func NewLogin(storageDir string, clientFactory func(token, apiHost string) platf
 				RegionURL: regionURL,
 			})
 			if err != nil {
-				if authErr, ok := err.(*auth.AuthError); ok {
+				var authErr *auth.AuthError
+				if errors.As(err, &authErr) {
 					return output.Err(authErr.Code, authErr.Message, authErr.Suggestion, nil)
 				}
 				return output.Err(platform.ErrAPIError, err.Error(), "", nil)

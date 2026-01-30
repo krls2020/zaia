@@ -16,22 +16,13 @@ func setupAuthenticatedStorage(t *testing.T) string {
 	dir := t.TempDir()
 	path := filepath.Join(dir, "zaia.data")
 	storage := auth.NewStorage(path)
-	storage.Save(auth.Data{
+	_ = storage.Save(auth.Data{
 		Token:   "test-token",
 		APIHost: "api.zerops.io",
 		Project: auth.ProjectInfo{ID: "proj-1", Name: "my-app"},
 		User:    auth.UserData{Name: "John", Email: "john@test.com"},
 	})
 	return path
-}
-
-func captureOutput(t *testing.T, fn func()) string {
-	t.Helper()
-	var buf bytes.Buffer
-	output.SetWriter(&buf)
-	defer output.ResetWriter()
-	fn()
-	return buf.String()
 }
 
 func TestDiscoverCmd_ListServices(t *testing.T) {
@@ -94,7 +85,7 @@ func TestDiscoverCmd_EmptyProject(t *testing.T) {
 	}
 
 	var resp map[string]interface{}
-	json.Unmarshal(stdout.Bytes(), &resp)
+	_ = json.Unmarshal(stdout.Bytes(), &resp)
 	data := resp["data"].(map[string]interface{})
 	services := data["services"].([]interface{})
 	if len(services) != 0 {
@@ -108,9 +99,9 @@ func TestDiscoverCmd_SingleService(t *testing.T) {
 		WithProject(&platform.Project{ID: "proj-1", Name: "my-app", Status: "ACTIVE"}).
 		WithServices([]platform.ServiceStack{
 			{
-				ID:     "s1",
-				Name:   "api",
-				Status: "ACTIVE",
+				ID:                   "s1",
+				Name:                 "api",
+				Status:               "ACTIVE",
 				ServiceStackTypeInfo: platform.ServiceTypeInfo{ServiceStackTypeVersionName: "nodejs@22"},
 				CustomAutoscaling: &platform.CustomAutoscaling{
 					HorizontalMinCount: 1,
@@ -139,7 +130,7 @@ func TestDiscoverCmd_SingleService(t *testing.T) {
 	}
 
 	var resp map[string]interface{}
-	json.Unmarshal(stdout.Bytes(), &resp)
+	_ = json.Unmarshal(stdout.Bytes(), &resp)
 	data := resp["data"].(map[string]interface{})
 	services := data["services"].([]interface{})
 	if len(services) != 1 {
@@ -179,7 +170,7 @@ func TestDiscoverCmd_ServiceNotFound(t *testing.T) {
 	}
 
 	var resp map[string]interface{}
-	json.Unmarshal(stdout.Bytes(), &resp)
+	_ = json.Unmarshal(stdout.Bytes(), &resp)
 	if resp["code"] != "SERVICE_NOT_FOUND" {
 		t.Errorf("code = %v, want SERVICE_NOT_FOUND", resp["code"])
 	}
@@ -203,7 +194,7 @@ func TestDiscoverCmd_NotAuthenticated(t *testing.T) {
 	}
 
 	var resp map[string]interface{}
-	json.Unmarshal(stdout.Bytes(), &resp)
+	_ = json.Unmarshal(stdout.Bytes(), &resp)
 	if resp["code"] != "AUTH_REQUIRED" {
 		t.Errorf("code = %v, want AUTH_REQUIRED", resp["code"])
 	}

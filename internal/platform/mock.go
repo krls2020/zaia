@@ -6,6 +6,8 @@ import (
 	"sync"
 )
 
+const statusCancelled = "CANCELLED"
+
 // Compile-time interface check
 var _ Client = (*Mock)(nil)
 
@@ -13,15 +15,15 @@ var _ Client = (*Mock)(nil)
 type Mock struct {
 	mu sync.RWMutex
 
-	userInfo  *UserInfo
-	projects  []Project
-	project   *Project
-	services  []ServiceStack
-	service   *ServiceStack
-	processes map[string]*Process
-	envVars   map[string][]EnvVar // serviceID -> env vars
-	projectEnv []EnvVar
-	logAccess *LogAccess
+	userInfo     *UserInfo
+	projects     []Project
+	project      *Project
+	services     []ServiceStack
+	service      *ServiceStack
+	processes    map[string]*Process
+	envVars      map[string][]EnvVar // serviceID -> env vars
+	projectEnv   []EnvVar
+	logAccess    *LogAccess
 	importResult *ImportResult
 
 	// Error overrides: method name -> error
@@ -196,9 +198,9 @@ func (m *Mock) StartService(_ context.Context, serviceID string) (*Process, erro
 		return nil, err
 	}
 	return &Process{
-		ID:         "proc-start-" + serviceID,
-		ActionName: "start",
-		Status:     "PENDING",
+		ID:            "proc-start-" + serviceID,
+		ActionName:    "start",
+		Status:        "PENDING",
 		ServiceStacks: []ServiceStackRef{{ID: serviceID}},
 	}, nil
 }
@@ -208,9 +210,9 @@ func (m *Mock) StopService(_ context.Context, serviceID string) (*Process, error
 		return nil, err
 	}
 	return &Process{
-		ID:         "proc-stop-" + serviceID,
-		ActionName: "stop",
-		Status:     "PENDING",
+		ID:            "proc-stop-" + serviceID,
+		ActionName:    "stop",
+		Status:        "PENDING",
 		ServiceStacks: []ServiceStackRef{{ID: serviceID}},
 	}, nil
 }
@@ -220,9 +222,9 @@ func (m *Mock) RestartService(_ context.Context, serviceID string) (*Process, er
 		return nil, err
 	}
 	return &Process{
-		ID:         "proc-restart-" + serviceID,
-		ActionName: "restart",
-		Status:     "PENDING",
+		ID:            "proc-restart-" + serviceID,
+		ActionName:    "restart",
+		Status:        "PENDING",
 		ServiceStacks: []ServiceStackRef{{ID: serviceID}},
 	}, nil
 }
@@ -231,8 +233,8 @@ func (m *Mock) SetAutoscaling(_ context.Context, serviceID string, _ Autoscaling
 	if err := m.getError("SetAutoscaling"); err != nil {
 		return nil, err
 	}
-	// Default: return nil process (sync, applied immediately)
-	return nil, nil
+	// Sync operation (applied immediately) — no process to track.
+	return nil, nil //nolint:nilnil // intentional: nil process means sync (no async process)
 }
 
 func (m *Mock) GetServiceEnv(_ context.Context, serviceID string) ([]EnvVar, error) {
@@ -249,9 +251,9 @@ func (m *Mock) SetServiceEnvFile(_ context.Context, serviceID string, _ string) 
 		return nil, err
 	}
 	return &Process{
-		ID:         "proc-envset-" + serviceID,
-		ActionName: "envSet",
-		Status:     "PENDING",
+		ID:            "proc-envset-" + serviceID,
+		ActionName:    "envSet",
+		Status:        "PENDING",
 		ServiceStacks: []ServiceStackRef{{ID: serviceID}},
 	}, nil
 }
@@ -315,9 +317,9 @@ func (m *Mock) DeleteService(_ context.Context, serviceID string) (*Process, err
 		return nil, err
 	}
 	return &Process{
-		ID:         "proc-delete-" + serviceID,
-		ActionName: "delete",
-		Status:     "PENDING",
+		ID:            "proc-delete-" + serviceID,
+		ActionName:    "delete",
+		Status:        "PENDING",
 		ServiceStacks: []ServiceStackRef{{ID: serviceID}},
 	}, nil
 }
@@ -345,8 +347,7 @@ func (m *Mock) CancelProcess(_ context.Context, processID string) (*Process, err
 	if !ok {
 		return nil, fmt.Errorf("mock: process %s not found", processID)
 	}
-	cancelled := "CANCELLED"
-	p.Status = cancelled
+	p.Status = statusCancelled
 	return p, nil
 }
 
@@ -355,9 +356,9 @@ func (m *Mock) EnableSubdomainAccess(_ context.Context, serviceID string) (*Proc
 		return nil, err
 	}
 	return &Process{
-		ID:         "proc-subdomain-enable-" + serviceID,
-		ActionName: "enableSubdomain",
-		Status:     "PENDING",
+		ID:            "proc-subdomain-enable-" + serviceID,
+		ActionName:    "enableSubdomain",
+		Status:        "PENDING",
 		ServiceStacks: []ServiceStackRef{{ID: serviceID}},
 	}, nil
 }
@@ -367,9 +368,9 @@ func (m *Mock) DisableSubdomainAccess(_ context.Context, serviceID string) (*Pro
 		return nil, err
 	}
 	return &Process{
-		ID:         "proc-subdomain-disable-" + serviceID,
-		ActionName: "disableSubdomain",
-		Status:     "PENDING",
+		ID:            "proc-subdomain-disable-" + serviceID,
+		ActionName:    "disableSubdomain",
+		Status:        "PENDING",
 		ServiceStacks: []ServiceStackRef{{ID: serviceID}},
 	}, nil
 }

@@ -27,7 +27,7 @@ func TestDeleteCmd_WithConfirm(t *testing.T) {
 	}
 
 	var resp map[string]interface{}
-	json.Unmarshal(stdout.Bytes(), &resp)
+	_ = json.Unmarshal(stdout.Bytes(), &resp)
 	if resp["type"] != "async" {
 		t.Errorf("type = %v, want async", resp["type"])
 	}
@@ -55,7 +55,7 @@ func TestDeleteCmd_WithoutConfirm(t *testing.T) {
 	}
 
 	var resp map[string]interface{}
-	json.Unmarshal(stdout.Bytes(), &resp)
+	_ = json.Unmarshal(stdout.Bytes(), &resp)
 	if resp["code"] != "CONFIRM_REQUIRED" {
 		t.Errorf("code = %v, want CONFIRM_REQUIRED", resp["code"])
 	}

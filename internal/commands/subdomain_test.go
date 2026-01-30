@@ -28,7 +28,7 @@ func TestSubdomainCmd_Enable(t *testing.T) {
 	}
 
 	var resp map[string]interface{}
-	json.Unmarshal(stdout.Bytes(), &resp)
+	_ = json.Unmarshal(stdout.Bytes(), &resp)
 	if resp["type"] != "async" {
 		t.Errorf("type = %v, want async", resp["type"])
 	}
@@ -52,7 +52,7 @@ func TestSubdomainCmd_Disable(t *testing.T) {
 	}
 
 	var resp map[string]interface{}
-	json.Unmarshal(stdout.Bytes(), &resp)
+	_ = json.Unmarshal(stdout.Bytes(), &resp)
 	if resp["type"] != "async" {
 		t.Errorf("type = %v, want async", resp["type"])
 	}
@@ -77,7 +77,7 @@ func TestSubdomainCmd_AlreadyEnabled(t *testing.T) {
 	}
 
 	var resp map[string]interface{}
-	json.Unmarshal(stdout.Bytes(), &resp)
+	_ = json.Unmarshal(stdout.Bytes(), &resp)
 	if resp["type"] != "sync" {
 		t.Errorf("type = %v, want sync (idempotent)", resp["type"])
 	}

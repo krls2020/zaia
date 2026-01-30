@@ -8,6 +8,8 @@ import (
 	"github.com/zeropsio/zaia/internal/platform"
 )
 
+const statusStopped = "STOPPED"
+
 // Compile-time interface check.
 var _ platform.Client = (*StatefulMock)(nil)
 
@@ -255,7 +257,7 @@ func (m *StatefulMock) StopService(_ context.Context, serviceID string) (*platfo
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	if svc := m.findServiceByID(serviceID); svc != nil {
-		svc.Status = "STOPPED"
+		svc.Status = statusStopped
 	}
 	return m.makeProcess("stop", serviceID), nil
 }
@@ -273,8 +275,8 @@ func (m *StatefulMock) SetAutoscaling(_ context.Context, serviceID string, _ pla
 	if err := m.getError("SetAutoscaling"); err != nil {
 		return nil, err
 	}
-	// Return nil process = sync (applied immediately), matching real Mock behavior
-	return nil, nil
+	// Sync operation (applied immediately) — no process to track, matching real Mock behavior.
+	return nil, nil //nolint:nilnil // intentional: nil process means sync (no async process)
 }
 
 func (m *StatefulMock) GetServiceEnv(_ context.Context, serviceID string) ([]platform.EnvVar, error) {

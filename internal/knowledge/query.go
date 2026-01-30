@@ -113,9 +113,9 @@ func extractSeeAlsoSuggestions(content string) []string {
 	return suggestions
 }
 
-func capSuggestions(suggestions []string, max int) []string {
-	if len(suggestions) > max {
-		return suggestions[:max]
+func capSuggestions(suggestions []string, limit int) []string {
+	if len(suggestions) > limit {
+		return suggestions[:limit]
 	}
 	return suggestions
 }

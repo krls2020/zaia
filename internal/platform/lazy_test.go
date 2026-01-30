@@ -1,7 +1,6 @@
 package platform
 
 import (
-	"context"
 	"errors"
 	"sync"
 	"sync/atomic"
@@ -16,7 +15,7 @@ func TestLazyClient_InitOnFirstCall(t *testing.T) {
 	})
 
 	// First call should trigger init.
-	_, err := client.GetUserInfo(context.Background())
+	_, err := client.GetUserInfo(t.Context())
 	// We expect an API error since we're hitting a real endpoint with fake token.
 	// The point is that init() was called.
 	_ = err
@@ -25,7 +24,7 @@ func TestLazyClient_InitOnFirstCall(t *testing.T) {
 	}
 
 	// Second call should reuse cached client.
-	_, _ = client.GetUserInfo(context.Background())
+	_, _ = client.GetUserInfo(t.Context())
 	if atomic.LoadInt32(&callCount) != 1 {
 		t.Errorf("expected still 1 init call after second use, got %d", callCount)
 	}
@@ -36,7 +35,7 @@ func TestLazyClient_InitError(t *testing.T) {
 		return "", "", errors.New("no credentials")
 	})
 
-	_, err := client.ListServices(context.Background(), "proj-1")
+	_, err := client.ListServices(t.Context(), "proj-1")
 	if err == nil {
 		t.Fatal("expected error from resolver")
 	}
@@ -57,7 +56,7 @@ func TestLazyClient_ConcurrentInit(t *testing.T) {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			_, _ = client.GetUserInfo(context.Background())
+			_, _ = client.GetUserInfo(t.Context())
 		}()
 	}
 	wg.Wait()

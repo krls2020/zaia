@@ -1,7 +1,6 @@
 package platform
 
 import (
-	"context"
 	"fmt"
 	"testing"
 )
@@ -20,7 +19,7 @@ func TestMock_FluentAPI(t *testing.T) {
 			{ID: "s2", Name: "db", Status: "ACTIVE"},
 		})
 
-	ctx := context.Background()
+	ctx := t.Context()
 
 	user, err := mock.GetUserInfo(ctx)
 	if err != nil {
@@ -52,7 +51,7 @@ func TestMock_ErrorOverride(t *testing.T) {
 		WithUserInfo(&UserInfo{ID: "u1", FullName: "John", Email: "john@test.com"}).
 		WithError("GetUserInfo", fmt.Errorf("auth failed"))
 
-	ctx := context.Background()
+	ctx := t.Context()
 	_, err := mock.GetUserInfo(ctx)
 	if err == nil {
 		t.Fatal("expected error")
@@ -70,7 +69,7 @@ func TestMock_ProcessLifecycle(t *testing.T) {
 			Status:     "RUNNING",
 		})
 
-	ctx := context.Background()
+	ctx := t.Context()
 
 	// Get process
 	p, err := mock.GetProcess(ctx, "proc-1")
@@ -93,7 +92,7 @@ func TestMock_ProcessLifecycle(t *testing.T) {
 
 func TestMock_ProcessNotFound(t *testing.T) {
 	mock := NewMock()
-	ctx := context.Background()
+	ctx := t.Context()
 
 	_, err := mock.GetProcess(ctx, "nonexistent")
 	if err == nil {
@@ -103,7 +102,7 @@ func TestMock_ProcessNotFound(t *testing.T) {
 
 func TestMock_ServiceManagement(t *testing.T) {
 	mock := NewMock()
-	ctx := context.Background()
+	ctx := t.Context()
 
 	tests := []struct {
 		name   string
@@ -133,7 +132,7 @@ func TestMock_ServiceManagement(t *testing.T) {
 
 func TestMock_SetAutoscaling_ReturnsNil(t *testing.T) {
 	mock := NewMock()
-	ctx := context.Background()
+	ctx := t.Context()
 
 	p, err := mock.SetAutoscaling(ctx, "svc-1", AutoscalingParams{})
 	if err != nil {
@@ -154,7 +153,7 @@ func TestMock_EnvVars(t *testing.T) {
 			{ID: "pe1", Key: "SHARED", Content: "value"},
 		})
 
-	ctx := context.Background()
+	ctx := t.Context()
 
 	vars, err := mock.GetServiceEnv(ctx, "svc-1")
 	if err != nil {
@@ -180,7 +179,7 @@ func TestMock_GetServiceByID(t *testing.T) {
 			{ID: "svc-2", Name: "db"},
 		})
 
-	ctx := context.Background()
+	ctx := t.Context()
 
 	svc, err := mock.GetService(ctx, "svc-2")
 	if err != nil {

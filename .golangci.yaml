@@ -38,6 +38,43 @@ linters-settings:
 
 issues:
   max-same-issues: 0
+  exclude-rules:
+    # Test files: unchecked type assertions are acceptable (panic on failure is fine in tests)
+    - path: _test\.go
+      linters:
+        - forcetypeassert
+        - errorlint
+    # Test files: 0644 permissions are fine for test fixtures
+    - path: _test\.go
+      linters:
+        - gosec
+      text: "G306:"
+    # Test utility: 0644 permissions are fine for golden files
+    - path: testutil/
+      linters:
+        - gosec
+      text: "G306:"
+    # Test files: repeated strings ("sync", "async", "api") are fine
+    - path: _test\.go
+      linters:
+        - goconst
+    # Error constant names containing "token" are not hardcoded credentials
+    - linters:
+        - gosec
+      text: "G101:"
+    # Controlled integer conversions (validated input)
+    - linters:
+        - gosec
+      text: "G115:"
+    # Struct fields match JSON API — renaming would break compatibility
+    - path: internal/platform/client\.go
+      linters:
+        - revive
+      text: "var-naming: struct field"
+    # Exported type names: auth.AuthError and platform.PlatformError are established API
+    - linters:
+        - revive
+      text: "exported: type name will be used as"
 
 linters:
   enable:

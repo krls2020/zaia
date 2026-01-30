@@ -1,0 +1,186 @@
+package knowledge
+
+import (
+	"fmt"
+	"sort"
+	"strings"
+
+	"github.com/blevesearch/bleve/v2"
+)
+
+// SearchResult represents a single search result.
+type SearchResult struct {
+	URI     string  `json:"uri"`
+	Title   string  `json:"title"`
+	Score   float64 `json:"score"`
+	Snippet string  `json:"snippet"`
+}
+
+// Resource represents an MCP Resource entry.
+type Resource struct {
+	URI         string `json:"uri"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	MimeType    string `json:"mimeType"`
+}
+
+// Provider interface for knowledge access.
+type Provider interface {
+	List() []Resource
+	Get(uri string) (*Document, error)
+	Search(query string, limit int) []SearchResult
+	GenerateSuggestions(query string, results []SearchResult) []string
+}
+
+// Store holds the knowledge base with BM25 index.
+type Store struct {
+	docs  map[string]*Document
+	index bleve.Index
+}
+
+// Verify Store implements Provider
+var _ Provider = (*Store)(nil)
+
+var globalStore *Store
+
+// GetEmbeddedStore returns the singleton Store instance.
+func GetEmbeddedStore() *Store {
+	if globalStore == nil {
+		globalStore = NewStore()
+	}
+	return globalStore
+}
+
+// NewStore creates a new Store by loading embedded documents and building a BM25 index.
+func NewStore() *Store {
+	s := &Store{
+		docs: loadFromEmbedded(),
+	}
+	s.buildIndex()
+	return s
+}
+
+func (s *Store) buildIndex() {
+	titleMapping := bleve.NewTextFieldMapping()
+	titleMapping.Analyzer = "standard"
+	titleMapping.Store = false
+	titleMapping.IncludeInAll = true
+
+	kwMapping := bleve.NewTextFieldMapping()
+	kwMapping.Analyzer = "standard"
+	kwMapping.Store = false
+
+	contentMapping := bleve.NewTextFieldMapping()
+	contentMapping.Analyzer = "standard"
+	contentMapping.Store = false
+
+	docMapping := bleve.NewDocumentMapping()
+	docMapping.AddFieldMappingsAt("title", titleMapping)
+	docMapping.AddFieldMappingsAt("keywords", kwMapping)
+	docMapping.AddFieldMappingsAt("content", contentMapping)
+
+	indexMapping := bleve.NewIndexMapping()
+	indexMapping.DefaultMapping = docMapping
+	indexMapping.DefaultAnalyzer = "standard"
+
+	index, err := bleve.NewMemOnly(indexMapping)
+	if err != nil {
+		panic(fmt.Sprintf("failed to create search index: %v", err))
+	}
+
+	batch := index.NewBatch()
+	for uri, doc := range s.docs {
+		batch.Index(uri, map[string]interface{}{
+			"title":    doc.Title,
+			"keywords": strings.Join(doc.Keywords, " "),
+			"content":  doc.Content,
+		})
+	}
+	if err := index.Batch(batch); err != nil {
+		panic(fmt.Sprintf("failed to index documents: %v", err))
+	}
+
+	s.index = index
+}
+
+// Search performs a BM25 search with field boosts and query expansion.
+func (s *Store) Search(query string, limit int) []SearchResult {
+	if limit <= 0 {
+		limit = 5
+	}
+
+	expanded := expandQuery(query)
+
+	titleQuery := bleve.NewMatchQuery(expanded)
+	titleQuery.SetField("title")
+	titleQuery.SetBoost(2.0)
+
+	kwQuery := bleve.NewMatchQuery(expanded)
+	kwQuery.SetField("keywords")
+	kwQuery.SetBoost(1.5)
+
+	contentQuery := bleve.NewMatchQuery(expanded)
+	contentQuery.SetField("content")
+	contentQuery.SetBoost(1.0)
+
+	disjunction := bleve.NewDisjunctionQuery(titleQuery, kwQuery, contentQuery)
+
+	searchRequest := bleve.NewSearchRequest(disjunction)
+	searchRequest.Size = limit
+
+	results, err := s.index.Search(searchRequest)
+	if err != nil || results.Total == 0 {
+		return nil
+	}
+
+	var out []SearchResult
+	for _, hit := range results.Hits {
+		doc := s.docs[hit.ID]
+		if doc == nil {
+			continue
+		}
+		out = append(out, SearchResult{
+			URI:     doc.URI,
+			Title:   doc.Title,
+			Score:   hit.Score,
+			Snippet: extractSnippet(doc.Content, query, 300),
+		})
+	}
+	return out
+}
+
+// List returns all available resources for MCP list_resources().
+func (s *Store) List() []Resource {
+	var resources []Resource
+	for _, doc := range s.docs {
+		resources = append(resources, Resource{
+			URI:         doc.URI,
+			Name:        doc.Title,
+			Description: doc.Description,
+			MimeType:    "text/markdown",
+		})
+	}
+	sort.Slice(resources, func(i, j int) bool {
+		return resources[i].URI < resources[j].URI
+	})
+	return resources
+}
+
+// Get returns a document by URI.
+func (s *Store) Get(uri string) (*Document, error) {
+	doc, ok := s.docs[uri]
+	if !ok {
+		return nil, fmt.Errorf("document not found: %s", uri)
+	}
+	return doc, nil
+}
+
+// DocumentCount returns the number of indexed documents.
+func (s *Store) DocumentCount() int {
+	return len(s.docs)
+}
+
+// ExpandQuery is exported for testing.
+func ExpandQuery(query string) string {
+	return expandQuery(query)
+}

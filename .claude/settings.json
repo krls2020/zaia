@@ -4,14 +4,8 @@
       {
         "matcher": "Edit|Write",
         "hooks": [
-          {
-            "type": "command",
-            "command": "/Users/macbook/Documents/Zerops-MCP/zaia/.claude/hooks/post-test.sh"
-          },
-          {
-            "type": "command",
-            "command": "/Users/macbook/Documents/Zerops-MCP/zaia/.claude/hooks/check-claude-md.sh"
-          }
+          {"type": "command", "command": ".claude/hooks/post-test.sh"},
+          {"type": "command", "command": ".claude/hooks/check-claude-md.sh"}
         ]
       }
     ],
@@ -19,10 +13,7 @@
       {
         "matcher": "Bash",
         "hooks": [
-          {
-            "type": "command",
-            "command": "/Users/macbook/Documents/Zerops-MCP/zaia/.claude/hooks/pre-commit-check.sh"
-          }
+          {"type": "command", "command": ".claude/hooks/pre-commit-check.sh"}
         ]
       }
     ]

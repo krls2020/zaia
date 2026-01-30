@@ -23,7 +23,7 @@ type Document struct {
 // loadFromEmbedded walks the embedded filesystem and parses all markdown documents.
 func loadFromEmbedded() map[string]*Document {
 	docs := make(map[string]*Document)
-	fs.WalkDir(contentFS, "embed", func(path string, d fs.DirEntry, err error) error {
+	_ = fs.WalkDir(contentFS, "embed", func(path string, d fs.DirEntry, err error) error {
 		if err != nil || d.IsDir() || !strings.HasSuffix(path, ".md") {
 			return nil
 		}

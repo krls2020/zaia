@@ -26,7 +26,7 @@ func TestLogFetcher_FetchLogs_Success(t *testing.T) {
 			t.Error("missing Authorization header")
 		}
 		w.Header().Set("Content-Type", "application/json")
-		w.Write(body)
+		_, _ = w.Write(body)
 	}))
 	defer srv.Close()
 
@@ -64,7 +64,7 @@ func TestLogFetcher_FetchLogs_QueryParams(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		receivedQuery = r.URL.RawQuery
 		w.Header().Set("Content-Type", "application/json")
-		w.Write([]byte(`{"items":[]}`))
+		_, _ = w.Write([]byte(`{"items":[]}`))
 	}))
 	defer srv.Close()
 
@@ -108,7 +108,7 @@ func containsSubstring(s, sub string) bool {
 func TestLogFetcher_FetchLogs_ServerError(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("internal error"))
+		_, _ = w.Write([]byte("internal error"))
 	}))
 	defer srv.Close()
 
@@ -134,7 +134,7 @@ func TestLogFetcher_FetchLogs_URLPrefix(t *testing.T) {
 	// Test that "GET " prefix is stripped from URL.
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		w.Write([]byte(`{"items":[]}`))
+		_, _ = w.Write([]byte(`{"items":[]}`))
 	}))
 	defer srv.Close()
 
@@ -167,7 +167,7 @@ func TestLogFetcher_FetchLogs_LimitApplied(t *testing.T) {
 
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		w.Write(body)
+		_, _ = w.Write(body)
 	}))
 	defer srv.Close()
 
@@ -189,12 +189,12 @@ func TestLogFetcher_SeverityAllNotSent(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		receivedQuery = r.URL.RawQuery
 		w.Header().Set("Content-Type", "application/json")
-		w.Write([]byte(`{"items":[]}`))
+		_, _ = w.Write([]byte(`{"items":[]}`))
 	}))
 	defer srv.Close()
 
 	fetcher := NewLogFetcher()
-	fetcher.FetchLogs(context.Background(), &LogAccess{
+	_, _ = fetcher.FetchLogs(context.Background(), &LogAccess{
 		URL:         srv.URL,
 		AccessToken: "tok",
 	}, LogFetchParams{Severity: "all", Limit: 10})

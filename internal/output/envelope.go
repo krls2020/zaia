@@ -102,7 +102,7 @@ func Err(code, message, suggestion string, ctx interface{}) error {
 		Suggestion: suggestion,
 		Context:    ctx,
 	}
-	writeJSON(resp)
+	_ = writeJSON(resp)
 	return &ZaiaError{Message: message, Code: code}
 }
 

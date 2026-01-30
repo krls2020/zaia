@@ -90,7 +90,7 @@ func (s *Store) buildIndex() {
 
 	batch := index.NewBatch()
 	for uri, doc := range s.docs {
-		batch.Index(uri, map[string]interface{}{
+		_ = batch.Index(uri, map[string]interface{}{
 			"title":    doc.Title,
 			"keywords": strings.Join(doc.Keywords, " "),
 			"content":  doc.Content,

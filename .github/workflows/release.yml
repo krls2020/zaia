@@ -1,0 +1,95 @@
+name: release
+
+on:
+  release:
+    types:
+      - released
+
+jobs:
+  build:
+    name: build & upload ${{ matrix.name }}
+    runs-on: ubuntu-22.04
+    env:
+      CGO_ENABLED: '0'
+    strategy:
+      matrix:
+        include:
+          - name: linux amd64
+            env:
+              GOOS: linux
+              GOARCH: amd64
+            file: zaia-linux-amd64
+            compress: true
+            strip: true
+
+          - name: linux 386
+            env:
+              GOOS: linux
+              GOARCH: 386
+            file: zaia-linux-i386
+            compress: true
+            strip: true
+
+          - name: darwin amd64
+            env:
+              GOOS: darwin
+              GOARCH: amd64
+            file: zaia-darwin-amd64
+            compress: false
+            strip: false
+
+          - name: darwin arm64
+            env:
+              GOOS: darwin
+              GOARCH: arm64
+            file: zaia-darwin-arm64
+            compress: false
+            strip: false
+
+          - name: windows amd64
+            env:
+              GOOS: windows
+              GOARCH: amd64
+            file: zaia-win-x64.exe
+            compress: false
+            strip: false
+
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v4
+
+      - name: set up Go 1.x
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: "go.mod"
+        id: go
+
+      - name: get dependencies
+        run: |
+          export GOPATH=$HOME/go
+          ./tools/install.sh
+
+      - name: build
+        env: ${{ matrix.env }}
+        run: >-
+          go build
+          -o builds/${{ matrix.file }}
+          -ldflags "-s -w -X github.com/zeropsio/zaia/internal/commands.version=${{ github.event.release.tag_name }}"
+          ./cmd/zaia/main.go
+
+      - name: compress binary
+        if: ${{ matrix.compress }}
+        uses: svenstaro/upx-action@v2
+        with:
+          file: ./builds/${{ matrix.file }}
+          strip: ${{ matrix.strip }}
+
+      - name: upload asset clean bin
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./builds/${{ matrix.file }}
+          asset_name: ${{ matrix.file }}
+          asset_content_type: application/octet-stream

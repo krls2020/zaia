@@ -26,7 +26,7 @@ ZAIA is part of the **Zerops Control Plane (ZCP)** — a three-component system:
 
 ## Features
 
-- **Authentication** — `zaia login <token>` with auto project discovery (token must have access to exactly 1 project)
+- **Authentication** — `zaia login --token <value>` with auto project discovery (token must have access to exactly 1 project)
 - **Service Discovery** — List services, env vars, service details
 - **Logs** — Fetch service logs with severity/time filtering
 - **Service Management** — Start, stop, restart, scale (async, returns process IDs)
@@ -44,8 +44,8 @@ ZAIA is part of the **Zerops Control Plane (ZCP)** — a three-component system:
 
 | Command | Type | Description |
 |---------|------|-------------|
-| `zaia login <token>` | sync | Auto project discovery, stores to zaia.data |
-| `zaia login <token> --url api.staging.zerops.io` | sync | Login to staging |
+| `zaia login --token <value>` | sync | Auto project discovery, stores to zaia.data |
+| `zaia login --token <value> --url api.staging.zerops.io` | sync | Login to staging |
 | `zaia logout` | sync | Removes zaia.data |
 | `zaia status` | sync | Shows user + project (no API call) |
 | `zaia version` | sync | Version, commit, build time |

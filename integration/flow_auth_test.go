@@ -11,7 +11,7 @@ func TestFlow_LoginThenDiscoverThenLogoutThenDiscoverFails(t *testing.T) {
 	FixtureUnauthenticated(h)
 
 	// 1. Login
-	r := h.MustRun("login test-token")
+	r := h.MustRun("login --token test-token")
 	r.AssertType("sync")
 	data := r.Data()
 	if data == nil {
@@ -50,7 +50,7 @@ func TestFlow_LoginMultiProjectToken(t *testing.T) {
 		{ID: "proj-2", Name: "project-two", Status: "ACTIVE"},
 	})
 
-	r := h.Run("login test-token")
+	r := h.Run("login --token test-token")
 	r.AssertType("error")
 	r.AssertErrorCode("TOKEN_MULTI_PROJECT")
 	r.AssertExitCode(2)
@@ -61,7 +61,7 @@ func TestFlow_LoginNoProjectToken(t *testing.T) {
 	FixtureUnauthenticated(h)
 	h.Mock().WithProjects(nil) // 0 projects
 
-	r := h.Run("login test-token")
+	r := h.Run("login --token test-token")
 	r.AssertType("error")
 	r.AssertErrorCode("TOKEN_NO_PROJECT")
 	r.AssertExitCode(2)

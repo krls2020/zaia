@@ -22,7 +22,7 @@ func TestLoginCmd_SingleProject_Success(t *testing.T) {
 	var buf bytes.Buffer
 	cmd.SetOut(&buf)
 	cmd.SetErr(&buf)
-	cmd.SetArgs([]string{"test-token", "--url", "api.zerops.io"})
+	cmd.SetArgs([]string{"--token", "test-token", "--url", "api.zerops.io"})
 
 	// Capture output
 	var stdout bytes.Buffer
@@ -72,7 +72,7 @@ func TestLoginCmd_MultiProject_ReturnsError(t *testing.T) {
 		})
 
 	cmd := NewLogin(storagePath, func(_, _ string) platform.Client { return mock })
-	cmd.SetArgs([]string{"token", "--url", "api.zerops.io"})
+	cmd.SetArgs([]string{"--token", "token", "--url", "api.zerops.io"})
 
 	var stdout bytes.Buffer
 	origWriter := getWriter()

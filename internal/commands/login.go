@@ -13,11 +13,14 @@ import (
 // clientFactory creates a platform.Client from (token, apiHost).
 func NewLogin(storageDir string, clientFactory func(token, apiHost string) platform.Client) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "login <token>",
+		Use:   "login",
 		Short: "Authenticate with Zerops",
-		Args:  cobra.ExactArgs(1),
+		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			token := args[0]
+			token, _ := cmd.Flags().GetString("token")
+			if token == "" {
+				return output.Err(platform.ErrInvalidUsage, "missing required flag: --token", "Usage: zaia login --token <value>", nil)
+			}
 			url, _ := cmd.Flags().GetString("url")
 			region, _ := cmd.Flags().GetString("region")
 			regionURL, _ := cmd.Flags().GetString("region-url")
@@ -59,6 +62,7 @@ func NewLogin(storageDir string, clientFactory func(token, apiHost string) platf
 		},
 	}
 
+	cmd.Flags().String("token", "", "Zerops access token (required)")
 	cmd.Flags().String("url", "", "API server URL (for staging/dev, skips region discovery)")
 	cmd.Flags().String("region", "", "Region name")
 	cmd.Flags().String("region-url", "", "Custom region metadata URL")

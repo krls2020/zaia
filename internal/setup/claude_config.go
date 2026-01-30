@@ -32,17 +32,24 @@ func LoadClaudeConfig(path string) (map[string]interface{}, error) {
 }
 
 // AddMCPServer adds or overwrites the zaia-mcp entry in mcpServers.
+// It sets PATH in env to include the binary's directory so the MCP server
+// can find zaia and zcli at runtime (IDEs don't inherit /etc/paths).
 func AddMCPServer(cfg map[string]interface{}, binaryPath string) {
 	servers, ok := cfg["mcpServers"].(map[string]interface{})
 	if !ok {
 		servers = make(map[string]interface{})
 	}
 
+	binDir := filepath.Dir(binaryPath)
+	path := binDir + ":/usr/local/bin:/usr/bin:/bin"
+
 	servers["zaia-mcp"] = map[string]interface{}{
 		"type":    "stdio",
 		"command": binaryPath,
 		"args":    []interface{}{},
-		"env":     map[string]interface{}{},
+		"env": map[string]interface{}{
+			"PATH": path,
+		},
 	}
 
 	cfg["mcpServers"] = servers

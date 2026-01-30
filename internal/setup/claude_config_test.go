@@ -110,6 +110,41 @@ func TestAddMCPServer(t *testing.T) {
 	}
 }
 
+func TestAddMCPServer_SetsPathEnv(t *testing.T) {
+	cfg := map[string]interface{}{}
+	AddMCPServer(cfg, "/home/user/.local/bin/zaia-mcp")
+
+	servers := cfg["mcpServers"].(map[string]interface{})
+	entry := servers["zaia-mcp"].(map[string]interface{})
+	env := entry["env"].(map[string]interface{})
+
+	pathVal, ok := env["PATH"].(string)
+	if !ok {
+		t.Fatal("PATH env should be a string")
+	}
+
+	// Must contain the binary's directory
+	if !containsPathSegment(pathVal, "/home/user/.local/bin") {
+		t.Errorf("PATH should contain binary dir, got %v", pathVal)
+	}
+	// Must contain standard system paths
+	if !containsPathSegment(pathVal, "/usr/local/bin") {
+		t.Errorf("PATH should contain /usr/local/bin, got %v", pathVal)
+	}
+	if !containsPathSegment(pathVal, "/usr/bin") {
+		t.Errorf("PATH should contain /usr/bin, got %v", pathVal)
+	}
+}
+
+func containsPathSegment(pathEnv, segment string) bool {
+	for _, p := range filepath.SplitList(pathEnv) {
+		if p == segment {
+			return true
+		}
+	}
+	return false
+}
+
 func TestAddMCPServer_PreservesOtherKeys(t *testing.T) {
 	cfg := map[string]interface{}{
 		"theme":    "dark",
@@ -143,7 +178,9 @@ func TestSaveClaudeConfig(t *testing.T) {
 				"type":    "stdio",
 				"command": "/bin/zaia-mcp",
 				"args":    []interface{}{},
-				"env":     map[string]interface{}{},
+				"env": map[string]interface{}{
+					"PATH": "/bin:/usr/local/bin:/usr/bin:/bin",
+				},
 			},
 		},
 	}

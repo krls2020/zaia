@@ -47,6 +47,9 @@ go test ./... -race -count=1                  # S race detection
 go build -o ./zaia ./cmd/zaia                 # Build
 go vet ./...                                  # Vet
 go test ./integration/ -v -count=1            # Integration
+make lint-fast                                # Fast lint (native, ~3s)
+make lint-local                               # Full lint (native, ~15s)
+make lint                                     # CI lint (3 platformy)
 ```
 
 ---
@@ -105,9 +108,9 @@ Zbývá: validace rozšíření (30+ fixture-based testů), hostname regex, debu
 .claude/
 ├── settings.json
 └── hooks/
-    ├── post-test.sh          # Po Edit/Write .go: go test + go vet
+    ├── post-test.sh          # Po Edit/Write .go: go test + go vet + golangci-lint (fast, non-blocking)
     ├── check-claude-md.sh    # Po Edit/Write klíčového souboru: reminder
-    └── pre-commit-check.sh   # Před git commit: kontrola CLAUDE.md
+    └── pre-commit-check.sh   # Před git commit: kontrola CLAUDE.md + golangci-lint (blocking)
 ```
 
 ---

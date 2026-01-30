@@ -16,7 +16,7 @@ func TestSubdomainCmd_Enable(t *testing.T) {
 		WithServices([]platform.ServiceStack{{ID: "s1", Name: "api", Status: "ACTIVE"}})
 
 	cmd := NewSubdomain(storagePath, mock)
-	cmd.SetArgs([]string{"--service", "api", "--action", "enable"})
+	cmd.SetArgs([]string{"enable", "--service", "api"})
 
 	var stdout bytes.Buffer
 	output.SetWriter(&stdout)
@@ -40,7 +40,7 @@ func TestSubdomainCmd_Disable(t *testing.T) {
 		WithServices([]platform.ServiceStack{{ID: "s1", Name: "api", Status: "ACTIVE"}})
 
 	cmd := NewSubdomain(storagePath, mock)
-	cmd.SetArgs([]string{"--service", "api", "--action", "disable"})
+	cmd.SetArgs([]string{"disable", "--service", "api"})
 
 	var stdout bytes.Buffer
 	output.SetWriter(&stdout)
@@ -65,7 +65,7 @@ func TestSubdomainCmd_AlreadyEnabled(t *testing.T) {
 		WithError("EnableSubdomainAccess", fmt.Errorf("AlreadyEnabled"))
 
 	cmd := NewSubdomain(storagePath, mock)
-	cmd.SetArgs([]string{"--service", "api", "--action", "enable"})
+	cmd.SetArgs([]string{"enable", "--service", "api"})
 
 	var stdout bytes.Buffer
 	output.SetWriter(&stdout)
@@ -84,5 +84,25 @@ func TestSubdomainCmd_AlreadyEnabled(t *testing.T) {
 	data := resp["data"].(map[string]interface{})
 	if data["status"] != "already_enabled" {
 		t.Errorf("status = %v, want already_enabled", data["status"])
+	}
+}
+
+func TestSubdomainCmd_NoSubcommand(t *testing.T) {
+	storagePath := setupAuthenticatedStorage(t)
+	mock := platform.NewMock()
+
+	cmd := NewSubdomain(storagePath, mock)
+	cmd.SetArgs([]string{})
+
+	var stdout bytes.Buffer
+	output.SetWriter(&stdout)
+	defer output.ResetWriter()
+
+	_ = cmd.Execute()
+
+	var resp map[string]interface{}
+	_ = json.Unmarshal(stdout.Bytes(), &resp)
+	if resp["type"] != "error" {
+		t.Errorf("type = %v, want error", resp["type"])
 	}
 }

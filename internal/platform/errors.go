@@ -36,6 +36,10 @@ const (
 	ErrAPIRateLimited         = "API_RATE_LIMITED"
 	ErrNetworkError           = "NETWORK_ERROR"
 	ErrInvalidUsage           = "INVALID_USAGE"
+	ErrSetupDownloadFailed    = "SETUP_DOWNLOAD_FAILED"
+	ErrSetupInstallFailed     = "SETUP_INSTALL_FAILED"
+	ErrSetupConfigFailed      = "SETUP_CONFIG_FAILED"
+	ErrSetupUnsupportedOS     = "SETUP_UNSUPPORTED_OS"
 )
 
 // MapHTTPError maps an HTTP status code and error to a ZAIA error code.
@@ -105,6 +109,8 @@ func ExitCodeForError(code string) int {
 		return 5
 	case ErrNetworkError:
 		return 6
+	case ErrSetupDownloadFailed, ErrSetupInstallFailed, ErrSetupConfigFailed, ErrSetupUnsupportedOS:
+		return 7
 	default:
 		return 1
 	}

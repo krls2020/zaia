@@ -23,7 +23,7 @@ func TestFlow_UnauthenticatedCommands(t *testing.T) {
 		{"env delete", "env delete --service api KEY"},
 		{"import", "import --content 'services:\n  - hostname: x\n    type: nodejs@22'"},
 		{"delete", "delete --service api --confirm"},
-		{"subdomain", "subdomain --service api --action enable"},
+		{"subdomain", "subdomain enable --service api"},
 	}
 
 	for _, tc := range commands {
@@ -53,7 +53,7 @@ func TestFlow_ServiceNotFound(t *testing.T) {
 		{"env set", "env set --service nonexistent KEY=val"},
 		{"env delete", "env delete --service nonexistent KEY"},
 		{"delete", "delete --service nonexistent --confirm"},
-		{"subdomain", "subdomain --service nonexistent --action enable"},
+		{"subdomain", "subdomain enable --service nonexistent"},
 		{"discover --service", "discover --service nonexistent"},
 	}
 

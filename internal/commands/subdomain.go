@@ -9,11 +9,29 @@ import (
 	"github.com/zeropsio/zaia/internal/platform"
 )
 
-// NewSubdomain creates the subdomain command.
+// NewSubdomain creates the subdomain command with enable/disable subcommands.
 func NewSubdomain(storagePath string, client platform.Client) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "subdomain",
 		Short: "Enable or disable Zerops subdomain access",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return output.Err(platform.ErrInvalidUsage,
+				"No subcommand specified for 'subdomain'",
+				"Run: zaia subdomain <enable|disable>",
+				map[string]interface{}{"availableSubcommands": []string{"enable", "disable"}})
+		},
+	}
+
+	cmd.AddCommand(newSubdomainAction(storagePath, client, "enable"))
+	cmd.AddCommand(newSubdomainAction(storagePath, client, "disable"))
+
+	return cmd
+}
+
+func newSubdomainAction(storagePath string, client platform.Client, action string) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   action,
+		Short: fmt.Sprintf("%s Zerops subdomain access", strings.Title(action)),
 		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			creds, err := resolveCredentials(storagePath)
@@ -22,17 +40,11 @@ func NewSubdomain(storagePath string, client platform.Client) *cobra.Command {
 			}
 
 			hostname, _ := cmd.Flags().GetString("service")
-			action, _ := cmd.Flags().GetString("action")
 
 			if hostname == "" {
 				return output.Err(platform.ErrServiceRequired,
 					"--service flag is required",
-					"Run: zaia subdomain --service <hostname> --action enable", nil)
-			}
-			if action != "enable" && action != "disable" {
-				return output.Err(platform.ErrInvalidParameter,
-					"--action must be 'enable' or 'disable'",
-					"Run: zaia subdomain --service <hostname> --action enable", nil)
+					fmt.Sprintf("Run: zaia subdomain %s --service <hostname>", action), nil)
 			}
 
 			ctx := cmd.Context()
@@ -84,7 +96,6 @@ func NewSubdomain(storagePath string, client platform.Client) *cobra.Command {
 	}
 
 	cmd.Flags().String("service", "", "Service hostname (required)")
-	cmd.Flags().String("action", "", "enable or disable (required)")
 
 	return cmd
 }

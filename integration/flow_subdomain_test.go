@@ -9,7 +9,7 @@ func TestFlow_SubdomainEnable(t *testing.T) {
 	h := NewHarness(t)
 	FixtureFullProject(h)
 
-	r := h.MustRun("subdomain --service api --action enable")
+	r := h.MustRun("subdomain enable --service api")
 	r.AssertType("async")
 	if len(r.Processes()) == 0 {
 		t.Fatal("expected processes")
@@ -20,7 +20,7 @@ func TestFlow_SubdomainDisable(t *testing.T) {
 	h := NewHarness(t)
 	FixtureFullProject(h)
 
-	r := h.MustRun("subdomain --service api --action disable")
+	r := h.MustRun("subdomain disable --service api")
 	r.AssertType("async")
 }
 
@@ -31,7 +31,7 @@ func TestFlow_SubdomainIdempotentEnable(t *testing.T) {
 	// Set error to simulate "already enabled"
 	h.Mock().WithError("EnableSubdomainAccess", fmt.Errorf("AlreadyEnabled"))
 
-	r := h.Run("subdomain --service api --action enable")
+	r := h.Run("subdomain enable --service api")
 	r.AssertType("sync")
 	data := r.Data()
 	if data["status"] != "already_enabled" {
@@ -45,7 +45,7 @@ func TestFlow_SubdomainIdempotentDisable(t *testing.T) {
 
 	h.Mock().WithError("DisableSubdomainAccess", fmt.Errorf("AlreadyDisabled"))
 
-	r := h.Run("subdomain --service api --action disable")
+	r := h.Run("subdomain disable --service api")
 	r.AssertType("sync")
 	data := r.Data()
 	if data["status"] != "already_disabled" {
@@ -53,11 +53,11 @@ func TestFlow_SubdomainIdempotentDisable(t *testing.T) {
 	}
 }
 
-func TestFlow_SubdomainInvalidAction(t *testing.T) {
+func TestFlow_SubdomainNoSubcommand(t *testing.T) {
 	h := NewHarness(t)
 	FixtureFullProject(h)
 
-	r := h.Run("subdomain --service api --action toggle")
+	r := h.Run("subdomain")
 	r.AssertType("error")
-	r.AssertErrorCode("INVALID_PARAMETER")
+	r.AssertErrorCode("INVALID_USAGE")
 }

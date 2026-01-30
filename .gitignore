@@ -1,0 +1,7 @@
+# Build outputs
+/zaia
+/bin/
+/builds/
+
+# OS
+.DS_Store

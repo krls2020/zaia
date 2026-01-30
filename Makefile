@@ -16,6 +16,14 @@ possible targets:
 endef
 export helpMessage
 
+VERSION ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo "dev")
+COMMIT  ?= $(shell git rev-parse --short HEAD 2>/dev/null || echo "none")
+BUILT   ?= $(shell date -u +%Y-%m-%dT%H:%M:%SZ)
+LDFLAGS  = -s -w \
+  -X github.com/zeropsio/zaia/internal/commands.version=$(VERSION) \
+  -X github.com/zeropsio/zaia/internal/commands.commit=$(COMMIT) \
+  -X github.com/zeropsio/zaia/internal/commands.built=$(BUILT)
+
 help:
 	@echo "$$helpMessage"
 
@@ -34,7 +42,7 @@ vet:
 	go vet ./...
 
 build:
-	go build -o ./zaia ./cmd/zaia
+	go build -ldflags "$(LDFLAGS)" -o bin/zaia ./cmd/zaia
 
 #########
 # BUILD #
@@ -42,16 +50,16 @@ build:
 all: windows-amd linux-amd linux-386 darwin-amd darwin-arm
 
 windows-amd:
-	CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o builds/zaia-win-x64.exe ./cmd/zaia/main.go
+	CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -ldflags "$(LDFLAGS)" -o builds/zaia-win-x64.exe ./cmd/zaia/main.go
 
 linux-amd:
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o builds/zaia-linux-amd64 ./cmd/zaia/main.go
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags "$(LDFLAGS)" -o builds/zaia-linux-amd64 ./cmd/zaia/main.go
 
 linux-386:
-	CGO_ENABLED=0 GOOS=linux GOARCH=386 go build -o builds/zaia-linux-i386 ./cmd/zaia/main.go
+	CGO_ENABLED=0 GOOS=linux GOARCH=386 go build -ldflags "$(LDFLAGS)" -o builds/zaia-linux-i386 ./cmd/zaia/main.go
 
 darwin-amd:
-	CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o builds/zaia-darwin-amd64 ./cmd/zaia/main.go
+	CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -ldflags "$(LDFLAGS)" -o builds/zaia-darwin-amd64 ./cmd/zaia/main.go
 
 darwin-arm:
-	CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -o builds/zaia-darwin-arm64 ./cmd/zaia/main.go
+	CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -ldflags "$(LDFLAGS)" -o builds/zaia-darwin-arm64 ./cmd/zaia/main.go

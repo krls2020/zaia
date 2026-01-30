@@ -1,13 +1,16 @@
 name: release
 
 on:
-  release:
-    types:
-      - released
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
 
 jobs:
   build:
-    name: build & upload ${{ matrix.name }}
+    name: build ${{ matrix.name }}
     runs-on: ubuntu-22.04
     env:
       CGO_ENABLED: '0'
@@ -75,7 +78,10 @@ jobs:
         run: >-
           go build
           -o builds/${{ matrix.file }}
-          -ldflags "-s -w -X github.com/zeropsio/zaia/internal/commands.version=${{ github.event.release.tag_name }}"
+          -ldflags "-s -w
+          -X github.com/zeropsio/zaia/internal/commands.version=${{ github.ref_name }}
+          -X github.com/zeropsio/zaia/internal/commands.commit=${{ github.sha }}
+          -X 'github.com/zeropsio/zaia/internal/commands.built=$(date -u +%Y-%m-%dT%H:%M:%SZ)'"
           ./cmd/zaia/main.go
 
       - name: compress binary
@@ -85,12 +91,29 @@ jobs:
           file: ./builds/${{ matrix.file }}
           strip: ${{ matrix.strip }}
 
-      - name: upload asset clean bin
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: upload artifact
+        uses: actions/upload-artifact@v4
         with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./builds/${{ matrix.file }}
-          asset_name: ${{ matrix.file }}
-          asset_content_type: application/octet-stream
+          name: ${{ matrix.file }}
+          path: ./builds/${{ matrix.file }}
+
+  release:
+    name: create release
+    needs: build
+    runs-on: ubuntu-22.04
+    steps:
+      - name: download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ./builds
+          merge-multiple: true
+
+      - name: create GitHub release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: >-
+          gh release create "${{ github.ref_name }}"
+          ./builds/*
+          --repo "${{ github.repository }}"
+          --title "${{ github.ref_name }}"
+          --generate-notes

@@ -12,6 +12,8 @@ import (
 	"github.com/zeropsio/zaia/internal/platform"
 )
 
+const typeError = "error"
+
 // Harness provides a test harness for integration testing ZAIA CLI commands.
 // Each Run() creates a fresh root command (simulating a new CLI invocation).
 type Harness struct {
@@ -87,7 +89,7 @@ func (h *Harness) MustRun(cmdLine string) *Result {
 	r := h.Run(cmdLine)
 	if r.err != nil && r.exitCode != 0 {
 		// Check if it's an expected error response (JSON error envelope)
-		if r.Type() == "error" {
+		if r.Type() == typeError {
 			h.t.Fatalf("MustRun(%q) failed: code=%s error=%s", cmdLine, r.ErrorCode(), r.ErrorMessage())
 		}
 		h.t.Fatalf("MustRun(%q) failed: %v\nstdout: %s", cmdLine, r.err, string(r.stdout))
@@ -178,7 +180,7 @@ func (r *Result) ErrorCode() string {
 func (r *Result) ErrorMessage() string {
 	r.t.Helper()
 	j := r.JSON()
-	if e, ok := j["error"].(string); ok {
+	if e, ok := j[typeError].(string); ok {
 		return e
 	}
 	return ""

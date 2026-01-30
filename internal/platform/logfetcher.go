@@ -12,6 +12,11 @@ import (
 	"time"
 )
 
+const (
+	maxLogResponseBytes   = 50 << 20 // 50 MB
+	maxErrorResponseBytes = 1 << 20  // 1 MB
+)
+
 // ZeropsLogFetcher fetches logs from the Zerops log backend (separate HTTP service).
 type ZeropsLogFetcher struct {
 	httpClient *http.Client
@@ -50,7 +55,6 @@ func (f *ZeropsLogFetcher) FetchLogs(ctx context.Context, access *LogAccess, par
 
 	// Build query parameters.
 	q := logURL.Query()
-	q.Set("accessToken", access.AccessToken)
 
 	if params.ServiceID != "" {
 		q.Set("serviceStackId", params.ServiceID)
@@ -90,12 +94,12 @@ func (f *ZeropsLogFetcher) FetchLogs(ctx context.Context, access *LogAccess, par
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		body, _ := io.ReadAll(resp.Body)
+		body, _ := io.ReadAll(io.LimitReader(resp.Body, maxErrorResponseBytes))
 		return nil, NewPlatformError(ErrAPIError,
 			fmt.Sprintf("log backend returned HTTP %d: %s", resp.StatusCode, string(body)), "")
 	}
 
-	bodyBytes, err := io.ReadAll(resp.Body)
+	bodyBytes, err := io.ReadAll(io.LimitReader(resp.Body, maxLogResponseBytes))
 	if err != nil {
 		return nil, NewPlatformError(ErrAPIError, fmt.Sprintf("failed to read log response: %v", err), "")
 	}

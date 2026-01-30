@@ -21,9 +21,6 @@ func TestLogFetcher_FetchLogs_Success(t *testing.T) {
 	}
 
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Query().Get("accessToken") != "test-token" {
-			t.Error("missing accessToken query param")
-		}
 		if r.Header.Get("Authorization") != "Bearer test-token" {
 			t.Error("missing Authorization header")
 		}
@@ -241,5 +238,28 @@ func TestParseLogResponse_EmptyItems(t *testing.T) {
 	}
 	if len(entries) != 0 {
 		t.Errorf("expected 0 entries, got %d", len(entries))
+	}
+}
+
+func TestLogFetcher_NoTokenInQueryString(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Query().Get("accessToken") != "" {
+			t.Error("accessToken must not appear in query string")
+		}
+		if r.Header.Get("Authorization") != "Bearer secret-tok" {
+			t.Error("missing Authorization header")
+		}
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{"items":[]}`))
+	}))
+	defer srv.Close()
+
+	fetcher := NewLogFetcher()
+	_, err := fetcher.FetchLogs(t.Context(), &LogAccess{
+		URL:         srv.URL,
+		AccessToken: "secret-tok",
+	}, LogFetchParams{Limit: 10})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
 	}
 }

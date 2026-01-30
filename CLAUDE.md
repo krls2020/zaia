@@ -35,6 +35,7 @@ Součást ZCP: **ZAIA-MCP** (github.com/krls2020/zaia-mcp) volá `zaia` jako sub
 - Popisné názvy: `TestLogin_SingleProject_Success`
 - Max 300 řádků per soubor
 - `output.SetWriter` je globální — testy NESMÍ používat `t.Parallel()`
+- **Všechny testy mockované** — `platform.MockClient` simuluje Zerops API; E2E testy proti real API žijí v `zaia-mcp/e2e/`
 
 ### Příkazy
 

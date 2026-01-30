@@ -24,6 +24,38 @@ ZAIA is part of the **Zerops Control Plane (ZCP)** — a three-component system:
 | **[ZAIA-MCP](https://github.com/krls2020/zaia-mcp)** | Thin MCP layer — calls `zaia` as subprocess |
 | **ZCLI** | Production CLI — ZAIA does not depend on it |
 
+## Install
+
+### Linux / macOS
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/krls2020/zaia/main/install.sh | sh
+```
+
+To install a specific version:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/krls2020/zaia/main/install.sh | sh -s v0.1.0
+```
+
+Installs to `~/.local/bin/zaia`. The script detects your OS and architecture automatically.
+
+### Windows (PowerShell)
+
+```powershell
+irm https://raw.githubusercontent.com/krls2020/zaia/main/install.ps1 | iex
+```
+
+Installs to `~/.zerops/bin/zaia.exe` and adds it to your user PATH.
+
+Set `ZAIA_INSTALL` to override the install directory.
+
+### From Source
+
+```bash
+go install github.com/zeropsio/zaia/cmd/zaia@latest
+```
+
 ## Features
 
 - **Authentication** — `zaia login --token <value>` with auto project discovery (token must have access to exactly 1 project)

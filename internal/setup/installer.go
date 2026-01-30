@@ -1,6 +1,7 @@
 package setup
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"net/http"
@@ -54,7 +55,12 @@ type Downloader interface {
 type HTTPDownloader struct{}
 
 func (h *HTTPDownloader) Download(url string) ([]byte, error) {
-	resp, err := http.Get(url) //nolint:gosec // URL is constructed internally
+	req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, url, nil)
+	if err != nil {
+		return nil, fmt.Errorf("creating request: %w", err)
+	}
+
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("download failed: %w", err)
 	}
@@ -84,7 +90,7 @@ func InstallBinary(dl Downloader, url, binPath string) error {
 		return fmt.Errorf("creating directory %s: %w", dir, err)
 	}
 
-	if err := os.WriteFile(binPath, data, 0755); err != nil {
+	if err := os.WriteFile(binPath, data, 0755); err != nil { //nolint:gosec // binary needs executable permissions
 		return fmt.Errorf("writing binary: %w", err)
 	}
 

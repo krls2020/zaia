@@ -64,7 +64,7 @@ func SaveClaudeConfig(path string, cfg map[string]interface{}) error {
 	// Append newline for POSIX compliance
 	data = append(data, '\n')
 
-	if err := os.WriteFile(path, data, 0644); err != nil {
+	if err := os.WriteFile(path, data, 0600); err != nil {
 		return fmt.Errorf("writing config: %w", err)
 	}
 	return nil

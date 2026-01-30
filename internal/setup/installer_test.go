@@ -2,7 +2,6 @@ package setup
 
 import (
 	"fmt"
-	"io"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -177,15 +176,4 @@ func TestInstallBinary_Idempotent(t *testing.T) {
 func TestHTTPDownloader_Implements(t *testing.T) {
 	var _ Downloader = &HTTPDownloader{}
 	_ = &HTTPDownloader{} // compile check
-}
-
-// mockReadCloser for HTTPDownloader response body simulation
-type mockReadCloser struct {
-	io.Reader
-	closed bool
-}
-
-func (m *mockReadCloser) Close() error {
-	m.closed = true
-	return nil
 }

@@ -7,6 +7,8 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/zeropsio/zaia/internal/output"
 	"github.com/zeropsio/zaia/internal/platform"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 // NewSubdomain creates the subdomain command with enable/disable subcommands.
@@ -31,7 +33,7 @@ func NewSubdomain(storagePath string, client platform.Client) *cobra.Command {
 func newSubdomainAction(storagePath string, client platform.Client, action string) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   action,
-		Short: fmt.Sprintf("%s Zerops subdomain access", strings.Title(action)),
+		Short: fmt.Sprintf("%s Zerops subdomain access", cases.Title(language.English).String(action)),
 		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			creds, err := resolveCredentials(storagePath)

@@ -1,82 +1,14 @@
+version: "2"
 run:
-  timeout: 10m
   concurrency: 16
   issues-exit-code: 1
   tests: true
-
 output:
   formats:
-    - format: colored-line-number
-
-linters-settings:
-  godox:
-    keywords:
-      - FIXME
-  goconst:
-    min-len: 3
-    min-occurrences: 3
-  revive:
-    rules:
-      - name: blank-imports
-      - name: context-as-argument
-      - name: dot-imports
-      - name: error-return
-      - name: error-strings
-      - name: error-naming
-      - name: exported
-      - name: increment-decrement
-      - name: var-naming
-      - name: range
-      - name: receiver-naming
-      - name: time-naming
-      - name: unexported-return
-      - name: indent-error-flow
-      - name: errorf
-      - name: empty-block
-      - name: superfluous-else
-      - name: unreachable-code
-
-issues:
-  max-same-issues: 0
-  exclude-rules:
-    # Test files: unchecked type assertions are acceptable (panic on failure is fine in tests)
-    - path: _test\.go
-      linters:
-        - forcetypeassert
-        - errorlint
-    # Test files: 0644 permissions are fine for test fixtures
-    - path: _test\.go
-      linters:
-        - gosec
-      text: "G306:"
-    # Test utility: 0644 permissions are fine for golden files
-    - path: testutil/
-      linters:
-        - gosec
-      text: "G306:"
-    # Test files: repeated strings ("sync", "async", "api") are fine
-    - path: _test\.go
-      linters:
-        - goconst
-    # Error constant names containing "token" are not hardcoded credentials
-    - linters:
-        - gosec
-      text: "G101:"
-    # Controlled integer conversions (validated input)
-    - linters:
-        - gosec
-      text: "G115:"
-    # Struct fields match JSON API — renaming would break compatibility
-    - path: internal/platform/client\.go
-      linters:
-        - revive
-      text: "var-naming: struct field"
-    # Exported type names: auth.AuthError and platform.PlatformError are established API
-    - linters:
-        - revive
-      text: "exported: type name will be used as"
-
+    text:
+      path: stdout
 linters:
+  default: none
   enable:
     - asasalint
     - asciicheck
@@ -99,13 +31,10 @@ linters:
     - goconst
     - gocritic
     - godox
-    - gofmt
     - goheader
-    - goimports
     - gomodguard
     - goprintffuncname
     - gosec
-    - gosimple
     - gosmopolitan
     - govet
     - grouper
@@ -130,18 +59,93 @@ linters:
     - staticcheck
     - tagalign
     - tagliatelle
-    - usetesting
     - testableexamples
     - testifylint
     - thelper
     - tparallel
-    - typecheck
     - unconvert
     - unparam
     - unused
     - usestdlibvars
+    - usetesting
     - wastedassign
     - whitespace
-
-  disable-all: true
-  fast: false
+  settings:
+    goconst:
+      min-len: 3
+      min-occurrences: 3
+    godox:
+      keywords:
+        - FIXME
+    revive:
+      rules:
+        - name: blank-imports
+        - name: context-as-argument
+        - name: dot-imports
+        - name: error-return
+        - name: error-strings
+        - name: error-naming
+        - name: exported
+        - name: increment-decrement
+        - name: var-naming
+        - name: range
+        - name: receiver-naming
+        - name: time-naming
+        - name: unexported-return
+        - name: indent-error-flow
+        - name: errorf
+        - name: empty-block
+        - name: superfluous-else
+        - name: unreachable-code
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    rules:
+      - linters:
+          - errorlint
+          - forcetypeassert
+        path: _test\.go
+      - linters:
+          - gosec
+        path: _test\.go
+        text: 'G306:'
+      - linters:
+          - gosec
+        path: testutil/
+        text: 'G306:'
+      - linters:
+          - goconst
+        path: _test\.go
+      - linters:
+          - gosec
+        text: 'G101:'
+      - linters:
+          - gosec
+        text: 'G115:'
+      - linters:
+          - revive
+        path: internal/platform/client\.go
+        text: 'var-naming: struct field'
+      - linters:
+          - revive
+        text: 'exported: type name will be used as'
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+issues:
+  max-same-issues: 0
+formatters:
+  enable:
+    - gofmt
+    - goimports
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$

@@ -82,6 +82,8 @@ services:
       maxCpu: 5
       minRam: 0.5
       maxRam: 4
+      minFreeRamGB: 0.5          # absolute free RAM threshold (GB)
+      minFreeRamPercent: 50      # % of granted RAM that must stay free
       minDisk: 1
       maxDisk: 20
 ```

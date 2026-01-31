@@ -16,55 +16,74 @@ Node.js on Zerops supports versions 18-22, uses Alpine base by default, and requ
 
 ## Configuration
 ```yaml
-# zerops.yaml
-myapp:
-  build:
-    base: nodejs@22
-    buildCommands:
-      - npm ci
-      - npm run build
-    deployFiles:
-      - dist
-      - node_modules
-      - package.json
-    cache:
-      - node_modules
-  run:
-    start: node dist/index.js
-    ports:
-      - port: 3000
-        protocol: HTTP
+zerops:
+  - setup: myapp
+    build:
+      base: nodejs@22
+      buildCommands:
+        - pnpm i
+        - pnpm build
+      deployFiles:
+        - dist
+        - node_modules
+        - package.json
+      cache:
+        - node_modules
+        - .pnpm-store
+    run:
+      start: node dist/index.js
+      ports:
+        - port: 3000
+          httpSupport: true
 ```
 
 ## Framework Patterns
 
 ### Next.js
 ```yaml
-build:
-  buildCommands:
-    - npm ci
-    - npm run build
-  deployFiles:
-    - .next
-    - node_modules
-    - package.json
-    - next.config.js
-run:
-  start: npm start
+zerops:
+  - setup: web
+    build:
+      base: nodejs@22
+      buildCommands:
+        - pnpm i
+        - pnpm build
+      deployFiles:
+        - .next
+        - node_modules
+        - package.json
+        - next.config.js
+        - public
+      cache:
+        - node_modules
+        - .next/cache
+    run:
+      start: pnpm start
+      ports:
+        - port: 3000
+          httpSupport: true
 ```
 
 ### NestJS
 ```yaml
-build:
-  buildCommands:
-    - npm ci
-    - npm run build
-  deployFiles:
-    - dist
-    - node_modules
-    - package.json
-run:
-  start: node dist/main.js
+zerops:
+  - setup: api
+    build:
+      base: nodejs@22
+      buildCommands:
+        - npm i
+        - npm run build
+      deployFiles:
+        - dist
+        - node_modules
+        - package.json
+      cache:
+        - node_modules
+    run:
+      start: node dist/main.js
+      ports:
+        - port: 3000
+          httpSupport: true
 ```
 
 ## SSR vs SSG Deployment
@@ -104,17 +123,15 @@ cache:
 
 | Variable | Value | Required |
 |----------|-------|----------|
-| `HOST` | `0.0.0.0` | Yes — Node.js must listen on all interfaces |
-| `PORT` | `3000` | Convention (match zerops.yml port) |
+| `PORT` | `3000` | Convention (match zerops.yaml port) |
 | `NODE_ENV` | `production` | Recommended |
 
 ## Gotchas
 1. **Include `node_modules` in deployFiles**: Unless using a bundler that inlines all deps — runtime has no `npm install`
 2. **No default port**: Must explicitly set port in `zerops.yaml` — Node.js doesn't auto-detect
-3. **Use `npm ci` not `npm install`**: Ensures reproducible builds from lockfile
-4. **Cache `node_modules`**: Speeds up builds significantly — add to `build.cache`
-5. **`HOST=0.0.0.0` required**: Without it, app may bind to localhost only — unreachable from Zerops routing
-6. **SSG needs tilde syntax**: Deploy `out/~` not `out` to avoid nested directory on static service
+3. **Cache `node_modules`**: Speeds up builds significantly — add to `build.cache`
+4. **SSG needs tilde syntax**: Deploy `out/~` not `out` to avoid nested directory on static service
+5. **`httpSupport: true` for ports**: Use `httpSupport: true` instead of `protocol: HTTP`
 
 ## See Also
 - zerops://services/_common-runtime

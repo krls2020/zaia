@@ -16,17 +16,18 @@ Docker services run in VMs (not containers), require `--network=host`, have fixe
 
 ## Configuration
 ```yaml
-# zerops.yml
-myservice:
-  build:
-    base: alpine@3.20
-    prepareCommands:
-      - docker pull myregistry/myapp:1.2.3
-    buildCommands:
-      - docker save myregistry/myapp:1.2.3 -o image.tar
-    deployFiles: ./image.tar
-  run:
-    start: docker load -i image.tar && docker run --network=host myregistry/myapp:1.2.3
+# zerops.yaml
+zerops:
+  - setup: myservice
+    build:
+      base: alpine@3.20
+      prepareCommands:
+        - docker pull myregistry/myapp:1.2.3
+      buildCommands:
+        - docker save myregistry/myapp:1.2.3 -o image.tar
+      deployFiles: ./image.tar
+    run:
+      start: docker load -i image.tar && docker run --network=host myregistry/myapp:1.2.3
 ```
 
 ```yaml

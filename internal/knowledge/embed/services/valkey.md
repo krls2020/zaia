@@ -7,7 +7,7 @@ valkey, redis, cache, key-value, in-memory, session, 6379, 6380, 7000, 7001, red
 Valkey is the recommended Redis replacement on Zerops; HA mode uses custom traffic forwarding (not native Valkey) where ports 6379/6380 on replicas forward to master.
 
 ## Zerops-Specific Behavior
-- Versions: 4, 7, 8
+- Versions: 7.2
 - Ports:
   - **6379** — Read/write, non-TLS (master)
   - **6380** — Read/write, TLS (master)
@@ -43,10 +43,10 @@ redis://${user}:${password}@${hostname}:7000
 
 ## Configuration
 ```yaml
-# import.yml
+# import.yaml
 services:
   - hostname: cache
-    type: valkey@8
+    type: valkey@7.2
     mode: HA
 ```
 

@@ -4,7 +4,7 @@
 runtime, build, deploy, run, working directory, port, prepare commands, build commands, deploy files, common runtime, pipeline
 
 ## TL;DR
-All Zerops runtimes share the same build pipeline (prepare → build → deploy), use `/var/www` as working directory, and must define ports in the 10-65435 range.
+All Zerops runtimes share the same build pipeline (prepare → build → deploy), use `/var/www` as working directory, and must define ports with `httpSupport: true` or `protocol: TCP|UDP`.
 
 ## Build Pipeline
 1. **prepareCommands** — Install OS dependencies, cached in base layer
@@ -16,9 +16,10 @@ All Zerops runtimes share the same build pipeline (prepare → build → deploy)
 - Runtime: `/var/www` (deployed files placed here)
 
 ## Port Configuration
-- Range: 10-65435 (80 and 443 reserved by Zerops)
+- Range: 10-65435 (80 reserved for PHP, 443 reserved by Zerops)
 - Define in `zerops.yaml` under `run.ports`
-- Protocols: HTTP, TCP, UDP
+- HTTP ports: `httpSupport: true`
+- Non-HTTP ports: `protocol: TCP` or `protocol: UDP`
 
 ## Shared Patterns
 
@@ -29,7 +30,6 @@ build:
     - node_modules      # Node.js
     - .next/cache       # Next.js
     - vendor            # PHP Composer
-    - __pycache__       # Python
     - target            # Rust/Java
 ```
 
@@ -37,6 +37,15 @@ build:
 ```yaml
 run:
   healthCheck:
+    httpGet:
+      port: 3000
+      path: /health
+```
+
+### Deploy Readiness Check
+```yaml
+deploy:
+  readinessCheck:
     httpGet:
       port: 3000
       path: /health
@@ -53,7 +62,8 @@ run:
 ## Gotchas
 1. **initCommands run every restart**: Use `prepareCommands` for package installation — `initCommands` runs on every container start
 2. **deployFiles is mandatory**: Build output not automatically deployed — must explicitly list files/dirs
-3. **Port 80/443 reserved**: Your app must use another port — Zerops handles SSL on 80/443
+3. **Port 80/443 reserved**: Your app must use another port (except PHP which uses 80) — Zerops handles SSL on 443
+4. **`httpSupport: true` for HTTP**: Use this instead of `protocol: HTTP` which is not valid
 
 ## See Also
 - zerops://config/zerops-yml

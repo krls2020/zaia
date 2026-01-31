@@ -62,7 +62,7 @@ Remove entirely or disable `enableSubdomainAccess`. Use VPN + pgAdmin/DBeaver lo
 | User uploads | Object Storage (S3) |
 | Media files | Object Storage (S3) |
 | Temp files | Container disk (OK) |
-| Build artifacts | Deploy via zerops.yml |
+| Build artifacts | Deploy via zerops.yaml |
 
 ```yaml
 # Add Object Storage for persistent files

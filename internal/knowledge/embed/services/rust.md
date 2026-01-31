@@ -4,10 +4,10 @@
 rust, cargo, rustup, musl, static binary, release build, rust binary, cargo build
 
 ## TL;DR
-Rust on Zerops compiles to a static binary; always use `--release`, cache `target/` directory, and be aware of musl linking issues on Alpine.
+Rust on Zerops compiles to a static binary; always use `--release`, cache `target/` directory, and deploy using tilde syntax for the binary.
 
 ## Zerops-Specific Behavior
-- Versions: 1.75+
+- Versions: stable, 1.80, 1.78, nightly
 - Base: Alpine (default) — musl target
 - Build tool: Cargo (pre-installed)
 - Working directory: `/var/www`
@@ -16,22 +16,22 @@ Rust on Zerops compiles to a static binary; always use `--release`, cache `targe
 
 ## Configuration
 ```yaml
-# zerops.yaml
-myapp:
-  build:
-    base: rust@latest
-    buildCommands:
-      - cargo build --release
-    deployFiles:
-      - target/release/myapp
-    cache:
-      - target
-      - ~/.cargo/registry
-  run:
-    start: ./myapp
-    ports:
-      - port: 8080
-        protocol: HTTP
+zerops:
+  - setup: myapp
+    build:
+      base: rust@stable
+      buildCommands:
+        - cargo build --release
+      deployFiles:
+        - ./target/release/~/myapp
+      cache:
+        - target
+        - ~/.cargo/registry
+    run:
+      start: ./myapp
+      ports:
+        - port: 8080
+          httpSupport: true
 ```
 
 ### Optimized Build (smaller binary)
@@ -47,7 +47,8 @@ build:
 1. **musl linking issues**: Some crates with C deps fail on Alpine's musl — use Ubuntu base or add musl-dev
 2. **Cache `target/` and `~/.cargo/registry`**: Rust builds are slow — caching is critical
 3. **Always use `--release`**: Debug builds are 10-100x slower and much larger
-4. **Deploy only the binary**: Don't deploy the entire `target/` directory
+4. **Deploy only the binary**: Use tilde syntax `./target/release/~/myapp` to extract binary from deep path
+5. **Use `rust@stable`**: Recipes use `stable` instead of `latest`
 
 ## See Also
 - zerops://services/_common-runtime

@@ -1,10 +1,10 @@
 # Init Commands & Migrations on Zerops
 
 ## Keywords
-init, initCommands, prepareCommands, migration, migrate, zsc, execOnce, test tcp, seed, collectstatic, idempotent, startup, one-time, database migration
+init, initCommands, prepareCommands, migration, migrate, zsc, execOnce, seed, collectstatic, idempotent, startup, one-time, database migration
 
 ## TL;DR
-`prepareCommands` = cached, runs once per change. `initCommands` = runs every container start. Use `zsc execOnce` for one-time initialization. Use `zsc test tcp` to wait for database readiness.
+`prepareCommands` = cached, runs once per change. `initCommands` = runs every container start. Use `zsc execOnce` with `${appVersionId}` for one-time initialization per deploy version.
 
 ## Command Types
 
@@ -19,28 +19,28 @@ init, initCommands, prepareCommands, migration, migrate, zsc, execOnce, test tcp
 
 ### `zsc execOnce` — One-Time Initialization
 
-Runs a command only once per service lifetime. Subsequent container starts skip it.
+Runs a command only once per deploy version when combined with `${appVersionId}`. Without version tracking, subsequent container restarts skip it.
 
 ```yaml
 run:
   initCommands:
-    - zsc execOnce createdb -- createdb myapp
+    - zsc execOnce ${appVersionId} -- npm run db:migrate
     - zsc execOnce seed -- node seed.js
 ```
 
-**Use cases:** Database creation, initial seed data, first-run setup
+**Use cases:** Database migrations (per deploy), initial seed data, first-run setup
 
-### `zsc test tcp` — Wait for Dependencies
+### Waiting for Dependencies
 
-Blocks until a TCP port is reachable. Use to wait for databases before running migrations.
+Use service dependencies in `initCommands` — managed services (PostgreSQL, Valkey, etc.) are available immediately through Zerops internal DNS. No need for TCP wait commands for managed services.
 
 ```yaml
 run:
   initCommands:
-    - zsc test tcp db:5432              # wait for PostgreSQL
-    - zsc test tcp cache:6379           # wait for Redis
-    - php artisan migrate --force       # then run migration
+    - php artisan migrate --force       # DB is ready (managed service)
 ```
+
+For custom services that may not be ready immediately, you can use health check mechanisms in your application code.
 
 ## Migration Patterns by Framework
 
@@ -48,7 +48,6 @@ run:
 ```yaml
 run:
   initCommands:
-    - zsc test tcp db:5432
     - php artisan migrate --force
     - php artisan config:cache
     - php artisan route:cache
@@ -59,16 +58,14 @@ run:
 ```yaml
 run:
   initCommands:
-    - zsc test tcp db:5432
-    - PYTHONPATH=./libs python manage.py migrate --noinput
-    - PYTHONPATH=./libs python manage.py collectstatic --noinput
+    - python manage.py migrate --noinput
+    - python manage.py collectstatic --noinput
 ```
 
 ### Symfony (PHP)
 ```yaml
 run:
   initCommands:
-    - zsc test tcp db:5432
     - php bin/console doctrine:migrations:migrate --no-interaction
     - php bin/console cache:warmup
 ```
@@ -91,8 +88,7 @@ build:
 ```yaml
 run:
   initCommands:
-    - zsc test tcp db:5432
-    - npm run typeorm migration:run
+    - zsc execOnce ${appVersionId} -- npm run typeorm migration:run
 ```
 
 ### Payload CMS (Node.js)
@@ -129,13 +125,13 @@ All `initCommands` must be **idempotent** — safe to run multiple times:
 | Build-time | Fails build if migration fails | Can't reach DB from build env | DB accessible from build |
 | Runtime (initCommands) | DB always available | App starts slower | Default recommendation |
 
-**Zerops recommendation:** Use `initCommands` with `zsc test tcp` for migrations.
+**Zerops recommendation:** Use `initCommands` for migrations. Managed databases are available via internal DNS.
 
 ## Gotchas
 1. **initCommands run EVERY start**: Don't install packages here — use `prepareCommands`
 2. **prepareCommands change = full rebuild**: Modifying prepare invalidates both cache layers
 3. **Migrations must be idempotent**: Container restarts re-run all initCommands
-4. **DB might not be ready**: Always use `zsc test tcp` before migration commands
+4. **Use `${appVersionId}` with `zsc execOnce`**: Ensures migration runs once per deploy version, not just once ever
 5. **collectstatic in init, not build**: Django static files may need runtime env vars
 6. **`zsc execOnce` is per-service**: Different services track independently
 

@@ -16,7 +16,7 @@ Ubuntu provides a full Debian-based environment (~100MB) with glibc — use it w
 
 ## Configuration
 ```yaml
-# import.yml
+# import.yaml
 services:
   - hostname: myservice
     type: ubuntu@24.04
@@ -24,17 +24,18 @@ services:
 ```
 
 ```yaml
-# zerops.yml
-myservice:
-  build:
-    base: ubuntu@24.04
-    prepareCommands:
-      - apt-get update && apt-get install -y build-essential
-    buildCommands:
-      - make build
-    deployFiles: ./app
-  run:
-    start: ./app
+# zerops.yaml
+zerops:
+  - setup: myservice
+    build:
+      base: ubuntu@24.04
+      prepareCommands:
+        - apt-get update && apt-get install -y build-essential
+      buildCommands:
+        - make build
+      deployFiles: ./app
+    run:
+      start: ./app
 ```
 
 ## When to Use Ubuntu Over Alpine

@@ -1,15 +1,15 @@
 # Deno on Zerops
 
 ## Keywords
-deno, javascript, typescript, deno deploy, permissions, deno.json, deno task, secure runtime
+deno, javascript, typescript, deno deploy, permissions, deno.json, deno.jsonc, deno task, secure runtime
 
 ## TL;DR
-Deno on Zerops requires explicit permission flags (`--allow-net`, `--allow-env`, etc.); uses `deno.json` for tasks, and has native TypeScript support without a build step.
+Deno on Zerops uses `deno@1`. Use `deno task` commands defined in `deno.jsonc` for build and start, and deploy specific output files.
 
 ## Zerops-Specific Behavior
-- Versions: 1+
+- Versions: 1
 - Base: Alpine (default)
-- Config: `deno.json` (tasks, imports)
+- Config: `deno.jsonc` (tasks, imports)
 - Working directory: `/var/www`
 - No default port — must configure
 - npm compatibility: `npm:` specifier for npm packages
@@ -17,38 +17,45 @@ Deno on Zerops requires explicit permission flags (`--allow-net`, `--allow-env`,
 
 ## Configuration
 ```yaml
-# zerops.yaml
-myapp:
-  build:
-    base: deno@1
-    buildCommands:
-      - deno cache main.ts
-    deployFiles: ./
-  run:
-    start: deno run --allow-net --allow-env --allow-read main.ts
-    ports:
-      - port: 8000
-        protocol: HTTP
+zerops:
+  - setup: api
+    build:
+      base: deno@1
+      buildCommands:
+        - deno task build
+      deployFiles:
+        - dist
+        - deno.jsonc
+    run:
+      start: deno task start
+      ports:
+        - port: 8000
+          httpSupport: true
 ```
 
-### With deno.json Tasks
-```json
-{
-  "tasks": {
-    "start": "deno run --allow-net --allow-env --allow-read main.ts"
-  }
-}
-```
+### Without deno.jsonc Tasks
 ```yaml
-run:
-  start: deno task start
+zerops:
+  - setup: api
+    build:
+      base: deno@1
+      buildCommands:
+        - deno cache main.ts
+      deployFiles: ./
+    run:
+      start: deno run --allow-net --allow-env --allow-read main.ts
+      ports:
+        - port: 8000
+          httpSupport: true
 ```
 
 ## Gotchas
-1. **Permissions are mandatory**: Without `--allow-net`, the app cannot open network ports — always set permissions
-2. **Use `--allow-all` cautiously**: Grants all permissions — fine for Zerops (isolated container) but be explicit in production code
-3. **`deno cache` for offline deps**: Cache dependencies during build so runtime doesn't need network for imports
-4. **npm compat via `npm:` prefix**: Import npm packages with `import express from "npm:express"` — works out of the box
+1. **Use `deno@1`**: Recipes use Deno 1.x, not 2.x
+2. **Prefer `deno task`**: Define build/start scripts in `deno.jsonc` and use `deno task build` / `deno task start`
+3. **Deploy specific files**: Deploy `dist` + `deno.jsonc`, not the entire directory
+4. **Permissions are mandatory**: Without `--allow-net`, the app cannot open network ports — always set permissions
+5. **`deno.jsonc` not `deno.json`**: Recipes use `.jsonc` (JSON with comments)
+6. **npm compat via `npm:` prefix**: Import npm packages with `import express from "npm:express"` — works out of the box
 
 ## See Also
 - zerops://services/_common-runtime

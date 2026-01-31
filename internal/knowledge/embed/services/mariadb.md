@@ -27,7 +27,7 @@ mysql://${user}:${password}@${hostname}:3306/${dbname}
 
 ## Configuration
 ```yaml
-# import.yml
+# import.yaml
 services:
   - hostname: db
     type: mariadb@10.11

@@ -33,7 +33,7 @@ zcli push <service-name> --archiveFilePath ./app.zip  # Deploy archive
 
 Flags:
 - `--versionName <name>` — Name the deploy version
-- `--zeropsYamlPath <path>` — Custom zerops.yml path
+- `--zeropsYamlPath <path>` — Custom zerops.yaml path
 - `--workspaceState clean|staged|all` — What to include (default: `all`)
 
 ### Logs
@@ -63,7 +63,7 @@ zcli service delete <service-name>
 ### Project Management
 ```bash
 zcli project list
-zcli project import <file.yml>                     # Import project from YAML
+zcli project import <file.yaml>                    # Import project from YAML
 ```
 
 ## Async Process Management
@@ -74,7 +74,7 @@ Location: `~/.config/zerops/zerops.log`
 
 ## Gotchas
 1. **`--workspaceState all` is default**: Deploys everything including uncommitted files — use `staged` for git-only
-2. **`push` requires `zerops.yml`**: Must exist in working directory (or specify with `--zeropsYamlPath`)
+2. **`push` requires `zerops.yaml`**: Must exist in working directory (or specify with `--zeropsYamlPath`)
 3. **VPN connects to one project**: Cannot connect to multiple projects simultaneously
 4. **Token scope matters**: Token must have access to the project/service you're operating on
 

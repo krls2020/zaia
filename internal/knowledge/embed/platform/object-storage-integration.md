@@ -103,7 +103,7 @@ S3Client s3 = S3Client.builder()
     .build();
 ```
 
-## import.yml Definition
+## import.yaml Definition
 
 ```yaml
 services:
@@ -124,7 +124,7 @@ services:
 |----------|-------------------|
 | User uploads (avatars, documents) | Yes — containers are volatile |
 | Media files (images, videos) | Yes — serve via public URL |
-| Build artifacts | No — deploy via zerops.yml |
+| Build artifacts | No — deploy via zerops.yaml |
 | Temporary files | No — container disk is fine |
 | Logs | No — use Zerops logging |
 | Database dumps | Yes — for backup storage |

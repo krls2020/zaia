@@ -18,16 +18,18 @@ Static is a simplified Nginx wrapper on Zerops with YAML-based routing configura
 
 ## Configuration
 ```yaml
-# zerops.yaml
-myapp:
-  build:
-    base: nodejs@22
-    buildCommands:
-      - npm ci && npm run build
-    deployFiles:
-      - dist
-  run:
-    documentRoot: dist
+zerops:
+  - setup: web
+    build:
+      base: nodejs@22
+      buildCommands:
+        - pnpm i && pnpm build
+      deployFiles:
+        - dist/~
+      cache:
+        - node_modules
+    run:
+      base: static
 ```
 
 ### With Routing Rules
@@ -57,15 +59,18 @@ run:
 Static service is the **run target** for SSG (Static Site Generation) builds. Build on `nodejs@22`, deploy to `static`:
 
 ```yaml
-app:
-  build:
-    base: nodejs@22
-    buildCommands:
-      - pnpm i && pnpm build
-    deployFiles:
-      - dist/~            # tilde = deploy contents, not the folder
-  run:
-    base: static
+zerops:
+  - setup: app
+    build:
+      base: nodejs@22
+      buildCommands:
+        - pnpm i && pnpm build
+      deployFiles:
+        - dist/~            # tilde = deploy contents, not the folder
+      cache:
+        - node_modules
+    run:
+      base: static
 ```
 
 ## Framework Build Outputs

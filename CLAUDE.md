@@ -129,7 +129,15 @@ Detailní API reference (příkazy, error codes, typy) → viz `README.md` a kó
 
 ### Při aktualizaci knowledge souborů
 
+Knowledge base žije v `../knowledge/` (zdrojová pravda) a je kopírována do `internal/knowledge/embed/` pro Go embed.
+
 ```bash
-cp -R ../knowledge/* internal/knowledge/embed/
-go test ./internal/knowledge/ -v
+# Automatický sync + testy (doporučeno)
+../scripts/sync-knowledge.sh
+
+# Pouze kontrola bez změn (CI/hook)
+../scripts/sync-knowledge.sh --check
+
+# Ukázat co by se změnilo
+../scripts/sync-knowledge.sh --dry-run
 ```

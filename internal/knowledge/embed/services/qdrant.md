@@ -28,7 +28,7 @@ Native snapshotting: `.snapshot` format (compressed), taken from primary node.
 
 ## Configuration
 ```yaml
-# import.yml
+# import.yaml
 services:
   - hostname: vectors
     type: qdrant@1

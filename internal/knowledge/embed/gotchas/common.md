@@ -59,7 +59,7 @@ The top 3 Zerops gotchas: (1) never use HTTPS internally, (2) never listen on po
 31. **SvelteKit static**: Requires `@sveltejs/adapter-static` + `export const prerender = true` in root layout
 32. **Phoenix releases**: `PHX_SERVER=true` env var required to start the HTTP server in release mode
 33. **Java Spring bind address**: `server.address=0.0.0.0` required — default binds to localhost only, unreachable from Zerops routing
-34. **Python pip in containers**: Use `--ignore-installed` flag to avoid conflicts with system packages
+34. **Python pip in containers**: Use `--no-cache-dir` flag and `build.addToRunPrepare` to persist packages in runtime
 35. **Django/Laravel behind proxy**: Configure `CSRF_TRUSTED_ORIGINS` (Django) or `TrustedProxies` middleware (Laravel) — reverse proxy breaks CSRF validation
 36. **Symfony sass-bundle**: Put `symfonycasts/sass-bundle` in `require` not `require-dev` — needed at runtime on Alpine
 37. **`AWS_USE_PATH_STYLE_ENDPOINT: true`**: Required for Zerops Object Storage (MinIO) — virtual-hosted style does not work

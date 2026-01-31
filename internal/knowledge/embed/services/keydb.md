@@ -22,7 +22,7 @@ KeyDB development has slowed significantly. **Valkey is the recommended replacem
 
 ## Configuration
 ```yaml
-# import.yml — DON'T USE FOR NEW PROJECTS
+# import.yaml — DON'T USE FOR NEW PROJECTS
 services:
   - hostname: cache
     type: keydb@6

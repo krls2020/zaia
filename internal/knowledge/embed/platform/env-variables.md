@@ -19,7 +19,7 @@ Zerops has two scopes (service and project), two isolation modes, and a `RUNTIME
 
 ## Variable Types
 - **Build & Runtime**: Defined in `zerops.yaml` `envVariables` section
-- **Secrets**: Defined in GUI or `envSecrets` in import.yml (not in zerops.yaml)
+- **Secrets**: Defined in GUI or `envSecrets` in import.yaml (not in zerops.yaml)
 - **System-generated**: Read-only (e.g., `hostname`, `port`, connection strings)
 
 ## Isolation Modes
@@ -47,7 +47,7 @@ Zerops has two scopes (service and project), two isolation modes, and a `RUNTIME
 
 ## Configuration
 ```yaml
-# zerops.yaml
+# zerops.yaml (under run: section)
 envVariables:
   NODE_ENV: production
   DATABASE_URL: postgresql://${db_user}:${db_password}@db:5432/${db_dbname}

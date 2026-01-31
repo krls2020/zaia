@@ -17,7 +17,7 @@ Alpine is the default base for all Zerops runtimes (~5MB), using musl libc and a
 
 ## Configuration
 ```yaml
-# import.yml
+# import.yaml
 services:
   - hostname: myservice
     type: alpine@3.20
@@ -25,17 +25,18 @@ services:
 ```
 
 ```yaml
-# zerops.yml
-myservice:
-  build:
-    base: alpine@3.20
-    prepareCommands:
-      - apk add --no-cache curl jq
-    buildCommands:
-      - echo "build step"
-    deployFiles: ./
-  run:
-    start: ./myapp
+# zerops.yaml
+zerops:
+  - setup: myservice
+    build:
+      base: alpine@3.20
+      prepareCommands:
+        - apk add --no-cache curl jq
+      buildCommands:
+        - echo "build step"
+      deployFiles: ./
+    run:
+      start: ./myapp
 ```
 
 ## Gotchas

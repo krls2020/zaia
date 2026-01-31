@@ -38,7 +38,7 @@ const client = new S3Client({
 
 ## Configuration
 ```yaml
-# import.yml
+# import.yaml
 services:
   - hostname: storage
     type: object-storage

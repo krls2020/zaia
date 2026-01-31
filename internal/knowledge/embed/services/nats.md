@@ -33,7 +33,7 @@ NATS on Zerops has JetStream enabled by default (40GB memory + 250GB file store)
 
 ## Configuration
 ```yaml
-# import.yml
+# import.yaml
 services:
   - hostname: messaging
     type: nats@2

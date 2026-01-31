@@ -17,18 +17,21 @@ Nginx on Zerops defaults to SPA routing (`$uri` → `$uri.html` → `$uri/index.
 
 ## Configuration
 ```yaml
-# zerops.yaml
-myapp:
-  build:
-    base: nodejs@22
-    buildCommands:
-      - npm ci && npm run build
-    deployFiles:
-      - dist
-  run:
-    documentRoot: dist
-    envVariables:
-      PRERENDER_TOKEN: my-prerender-token
+zerops:
+  - setup: web
+    build:
+      base: nodejs@22
+      buildCommands:
+        - pnpm i && pnpm build
+      deployFiles:
+        - dist/~
+      cache:
+        - node_modules
+    run:
+      base: nginx@1
+      documentRoot: .
+      envVariables:
+        PRERENDER_TOKEN: my-prerender-token
 ```
 
 ### Custom nginx.conf

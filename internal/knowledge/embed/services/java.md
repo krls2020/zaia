@@ -16,32 +16,40 @@ Java on Zerops supports JDK 17/21 with Maven/Gradle wrappers; tune JVM heap with
 
 ## Configuration
 ```yaml
-# zerops.yaml
-myapp:
-  build:
-    base: java@21
-    buildCommands:
-      - ./mvnw package -DskipTests
-    deployFiles:
-      - target/app.jar
-    cache:
-      - .m2
-  run:
-    start: java -Xmx512m -jar app.jar
-    ports:
-      - port: 8080
-        protocol: HTTP
+zerops:
+  - setup: api
+    build:
+      base: java@21
+      buildCommands:
+        - ./mvnw clean install --define maven.test.skip
+      deployFiles:
+        - ./target/api.jar
+      cache:
+        - .m2
+    run:
+      start: java -jar target/api.jar
+      ports:
+        - port: 8080
+          httpSupport: true
 ```
 
 ### Gradle
 ```yaml
-build:
-  buildCommands:
-    - ./gradlew build -x test
-  deployFiles:
-    - build/libs/*.jar
-  cache:
-    - .gradle
+zerops:
+  - setup: api
+    build:
+      base: java@21
+      buildCommands:
+        - ./gradlew build -x test
+      deployFiles:
+        - build/libs/*.jar
+      cache:
+        - .gradle
+    run:
+      start: java -jar build/libs/app.jar
+      ports:
+        - port: 8080
+          httpSupport: true
 ```
 
 ## JVM Memory Tuning
@@ -54,6 +62,7 @@ build:
 2. **Use wrapper scripts**: `./mvnw` and `./gradlew` ensure correct build tool version
 3. **Cache `.m2` or `.gradle`**: Maven/Gradle dependency downloads are slow — always cache
 4. **Deploy only the JAR**: Don't deploy entire `target/` directory — just the fat JAR
+5. **Spring Boot bind address**: Set `server.address=0.0.0.0` — default binds to localhost only
 
 ## See Also
 - zerops://services/_common-runtime

@@ -36,14 +36,14 @@ postgresql://${user}:${password}@${hostname}:6432/${dbname}?sslmode=require
 
 ## Configuration
 ```yaml
-# import.yml
+# import.yaml
 services:
   - hostname: db
     type: postgresql@16
     mode: HA
 ```
 
-## Auto-Injected Env Vars in import.yml
+## Auto-Injected Env Vars in import.yaml
 
 When referencing a PostgreSQL service in `envSecrets`, use the hostname prefix:
 
@@ -72,7 +72,7 @@ services:
 3. **HA mode is immutable**: Cannot switch after creation — delete and recreate
 4. **Don't modify `zps` user**: System maintenance account — never change or delete
 5. **Read replicas are async**: Brief replication lag possible — don't use for write-then-read patterns
-6. **Service hostname = DB host**: The `hostname` field in import.yml becomes the internal DNS name for DB connections
+6. **Service hostname = DB host**: The `hostname` field in import.yaml becomes the internal DNS name for DB connections
 
 ## See Also
 - zerops://decisions/choose-database

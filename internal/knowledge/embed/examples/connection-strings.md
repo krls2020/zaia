@@ -26,13 +26,13 @@ DATABASE_URL: mysql://${db_user}:${db_password}@${db_hostname}:3306/${db_dbname}
 ## Valkey / Redis
 ```yaml
 # Non-TLS
-REDIS_URL: redis://${cache_password}@${cache_hostname}:6379
+REDIS_URL: redis://${cache_user}:${cache_password}@${cache_hostname}:6379
 
 # TLS
-REDIS_TLS_URL: rediss://${cache_password}@${cache_hostname}:6380
+REDIS_TLS_URL: rediss://${cache_user}:${cache_password}@${cache_hostname}:6380
 
 # Read replicas (HA only, non-TLS)
-REDIS_REPLICA_URL: redis://${cache_password}@${cache_hostname}:7000
+REDIS_REPLICA_URL: redis://${cache_user}:${cache_password}@${cache_hostname}:7000
 ```
 
 ## Elasticsearch
@@ -92,7 +92,7 @@ TYPESENSE_API_KEY: ${search_apiKey}
 
 ## Pattern
 All env var references follow the pattern: `${<service-hostname>_<var-name>}`.
-The service hostname is the `hostname` field from your `import.yml` or service creation.
+The service hostname is the `hostname` field from your `import.yaml` or service creation.
 
 ## See Also
 - zerops://examples/zerops-yml-runtimes

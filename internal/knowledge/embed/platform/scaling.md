@@ -44,7 +44,7 @@ Docker services use **fixed resources** (no min-max ranges). Changing resources 
 - HA recovery: Failed container disconnected → new created → data synced → old removed
 - Single container mode: No automatic recovery, data loss risk
 
-## Configuration (zerops.yml)
+## Configuration (zerops.yaml)
 ```yaml
 scaling:
   minContainers: 1

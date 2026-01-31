@@ -30,10 +30,10 @@ ClickHouse on Zerops requires `ReplicatedMergeTree` engine in HA mode (3 nodes, 
 
 ## Configuration
 ```yaml
-# import.yml
+# import.yaml
 services:
   - hostname: analytics
-    type: clickhouse@24
+    type: clickhouse@25.3
     mode: HA
 ```
 

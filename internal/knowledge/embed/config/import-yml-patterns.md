@@ -1,10 +1,10 @@
-# import.yml Patterns on Zerops
+# import.yaml Patterns on Zerops
 
 ## Keywords
-import.yml, import yaml, services, priority, preprocessor, generateRandomString, envSecrets, envVariables, NON_HA, HA, production, mailpit, adminer, multi-service, service definition
+import.yaml, import yaml, services, priority, preprocessor, generateRandomString, envSecrets, envVariables, NON_HA, HA, production, mailpit, adminer, multi-service, service definition
 
 ## TL;DR
-import.yml defines services for a project. Key patterns: priority ordering (DB=10, App=5), `#yamlPreprocessor=on` for secret generation, `envSecrets` for sensitive values, and separate NON_HA→HA for production.
+import.yaml defines services for a project. Key patterns: priority ordering (DB=10, App=5), `#yamlPreprocessor=on` for secret generation, `envSecrets` for sensitive values, and separate NON_HA→HA for production.
 
 ## Service Priority Ordering
 

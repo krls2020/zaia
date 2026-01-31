@@ -26,7 +26,7 @@ Shared Storage on Zerops uses SeaweedFS with POSIX mount at `/mnt/{hostname}`, s
 
 ## Configuration
 ```yaml
-# import.yml
+# import.yaml
 services:
   - hostname: files
     type: shared-storage
@@ -36,11 +36,12 @@ services:
 ### Using in Runtime Service
 ```yaml
 # zerops.yaml
-myapp:
-  run:
-    start: node app.js
-    mount:
-      - files  # hostname of shared storage service
+zerops:
+  - setup: myapp
+    run:
+      start: node app.js
+      mount:
+        - files  # hostname of shared storage service
 ```
 
 Files accessible at `/mnt/files/` from the runtime service.

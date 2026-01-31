@@ -1,10 +1,10 @@
-# import.yml Specification
+# import.yaml Specification
 
 ## Keywords
-import.yml, import yaml, project import, service creation, preprocessor, random, jwt, hash, bcrypt, argon2id, service definition
+import.yaml, import yaml, project import, service creation, preprocessor, random, jwt, hash, bcrypt, argon2id, service definition
 
 ## TL;DR
-`import.yml` defines project infrastructure (services, databases, storage) with a YAML preprocessor for generating secrets, passwords, and JWT tokens at import time.
+`import.yaml` defines project infrastructure (services, databases, storage) with a YAML preprocessor for generating secrets, passwords, and JWT tokens at import time.
 
 ## Structure
 ```yaml
@@ -28,7 +28,7 @@ services:
 
   # Cache
   - hostname: cache
-    type: valkey@8
+    type: valkey@7.2
     mode: HA
 
   # Storage
@@ -89,10 +89,10 @@ services:
 ## Service Types
 | Type | Example |
 |------|---------|
-| Runtimes | `nodejs@22`, `python@3.12`, `go@1.22`, `php-nginx@8.3`, `java@21`, `dotnet@8`, `rust@latest`, `bun@1.1`, `deno@1`, `elixir@1.16`, `gleam@1.5` |
+| Runtimes | `nodejs@22`, `python@3.12`, `go@1`, `php-nginx@8.4`, `java@21`, `dotnet@8`, `rust@stable`, `bun@1.1`, `deno@1`, `elixir@1.16`, `gleam@1.5` |
 | Containers | `alpine@3.20`, `ubuntu@24.04` |
-| Databases | `postgresql@16`, `mariadb@10.11`, `clickhouse@24` |
-| Cache | `valkey@8`, `keydb@6` |
+| Databases | `postgresql@16`, `mariadb@10.11`, `clickhouse@25.3` |
+| Cache | `valkey@7.2`, `keydb@6` |
 | Search | `elasticsearch@8`, `meilisearch@1`, `typesense@27`, `qdrant@1` |
 | Queues | `kafka@3`, `nats@2` |
 | Web | `nginx@1`, `static` |

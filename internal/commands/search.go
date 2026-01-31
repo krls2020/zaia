@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -11,10 +12,30 @@ import (
 // NewSearch creates the search command for BM25 knowledge search.
 func NewSearch() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "search <query>",
+		Use:   "search [query...]",
 		Short: "Search knowledge base",
-		Args:  cobra.MinimumNArgs(1),
+		Args:  cobra.ArbitraryArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
+			getURI, _ := cmd.Flags().GetString("get")
+
+			// --get mode: direct document lookup by URI
+			if getURI != "" {
+				store := knowledge.GetEmbeddedStore()
+				doc, err := store.Get(getURI)
+				if err != nil {
+					return output.Err("NOT_FOUND", "Document not found", "", nil)
+				}
+				return output.Sync(map[string]interface{}{
+					"uri":     doc.URI,
+					"title":   doc.Title,
+					"content": doc.Content,
+				})
+			}
+
+			if len(args) == 0 {
+				return fmt.Errorf("requires at least 1 arg(s), only received 0")
+			}
+
 			query := strings.Join(args, " ")
 			limit, _ := cmd.Flags().GetInt("limit")
 
@@ -58,6 +79,7 @@ func NewSearch() *cobra.Command {
 		},
 	}
 
+	cmd.Flags().String("get", "", "Get document by URI")
 	cmd.Flags().Int("limit", 5, "Max results (1-20)")
 	return cmd
 }

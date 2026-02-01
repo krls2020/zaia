@@ -36,12 +36,12 @@ test-race:
 	go test -race ./... -count=1
 
 lint:
-	GOOS=darwin GOARCH=arm64 golangci-lint run ./... --verbose
-	GOOS=linux GOARCH=amd64 golangci-lint run ./... --verbose
-	GOOS=windows GOARCH=amd64 golangci-lint run ./... --verbose
+	GOOS=darwin GOARCH=arm64 golangci-lint run ./...
+	GOOS=linux GOARCH=amd64 golangci-lint run ./...
+	GOOS=windows GOARCH=amd64 golangci-lint run ./...
 
 lint-fast: ## Fast lint (native platform, fast mode)
-	golangci-lint run ./... --fast
+	golangci-lint run ./... --fast-only
 
 lint-local: ## Full lint (native platform)
 	golangci-lint run ./...

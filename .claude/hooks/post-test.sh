@@ -35,7 +35,7 @@ if [ -d "$PKG_DIR" ]; then
 
     # Fast lint on changed package (non-blocking)
     if command -v golangci-lint &>/dev/null; then
-        LINT_OUTPUT=$(golangci-lint run "./${PKG_DIR}" --fast 2>&1)
+        LINT_OUTPUT=$(golangci-lint run "./${PKG_DIR}" --fast-only 2>&1)
         LINT_EXIT=$?
         if [ $LINT_EXIT -ne 0 ] && [ -n "$LINT_OUTPUT" ]; then
             echo "-- golangci-lint (fast) --"

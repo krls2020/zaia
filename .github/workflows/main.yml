@@ -72,4 +72,4 @@ jobs:
       run: go test -v ./... -count=1
 
     - name: lint
-      run: golangci-lint run ./... --verbose
+      run: golangci-lint run ./...

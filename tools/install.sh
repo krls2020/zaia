@@ -17,5 +17,4 @@ echo "GOBIN=${GOBIN}"
 
 rm -rf tmp
 
-# https://github.com/golangci/golangci-lint#go Please, do not install golangci-lint by go get
-curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b "$GOBIN" v1.64.7
+GOBIN="$GOBIN" go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.8.0

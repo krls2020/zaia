@@ -42,8 +42,15 @@ const client = new S3Client({
 services:
   - hostname: storage
     type: object-storage
-    objectStorageSize: 10  # GB
+    objectStorageSize: 10           # GB (1-100)
+    objectStoragePolicy: public-read  # optional: public-read or private (default)
+    priority: 10                    # start before app services
 ```
+
+**Import parameters:**
+- `objectStorageSize` (required): Quota in GB (1-100)
+- `objectStoragePolicy` (optional): `public-read` for public access, omit or `private` for private
+- `priority`: Use same priority as databases (10) so storage is ready before app starts
 
 ## Gotchas
 1. **No Zerops backup**: Object Storage is not backed up by Zerops — implement your own backup/lifecycle policies

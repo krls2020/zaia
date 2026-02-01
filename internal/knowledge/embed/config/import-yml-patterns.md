@@ -98,7 +98,10 @@ services:
     enableSubdomainAccess: true    # Pre-configures subdomain
 ```
 
-**Important**: The `zerops_subdomain enable` API tool only works on services that have been deployed (status ACTIVE). For newly imported services (status READY_TO_DEPLOY), use `enableSubdomainAccess: true` in import YAML instead.
+**Important — subdomain lifecycle:**
+- For **new services** (created via import): Use `enableSubdomainAccess: true` in import YAML. This is sufficient — do NOT also call `zerops_subdomain enable` afterward. The subdomain is pre-configured and activates when the service gets deployed.
+- For **existing ACTIVE services**: Use `zerops_subdomain enable` tool. This only works on services with status ACTIVE — calling it on READY_TO_DEPLOY services will fail with "Service stack is not http or https".
+- **Rule of thumb**: If you're importing a new service, always use `enableSubdomainAccess: true` in the import YAML and skip the `zerops_subdomain` tool call.
 
 ## Common Multi-Service Combos
 

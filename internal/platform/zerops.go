@@ -549,6 +549,96 @@ func (z *ZeropsClient) GetProjectLog(ctx context.Context, projectID string) (*Lo
 }
 
 // ---------------------------------------------------------------------------
+// Activity search
+// ---------------------------------------------------------------------------
+
+func (z *ZeropsClient) SearchProcesses(ctx context.Context, projectID string, limit int) ([]ProcessEvent, error) {
+	clientID, err := z.getClientID(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	filter := body.EsFilter{
+		Search: body.EsFilterSearch{
+			body.EsSearchItem{
+				Name:     types.NewString("clientId"),
+				Operator: types.NewString("eq"),
+				Value:    types.NewString(clientID),
+			},
+		},
+		Sort: body.EsFilterSort{
+			body.EsSortItem{
+				Name:      types.NewString("created"),
+				Ascending: types.NewBoolNull(false),
+			},
+		},
+		Limit: types.NewIntNull(limit),
+	}
+
+	resp, err := z.handler.PostProcessSearch(ctx, filter)
+	if err != nil {
+		return nil, mapSDKError(err, "process")
+	}
+	out, err := resp.Output()
+	if err != nil {
+		return nil, mapSDKError(err, "process")
+	}
+
+	events := make([]ProcessEvent, 0, len(out.Items))
+	for _, p := range out.Items {
+		pid := p.ProjectId.TypedString().String()
+		if pid != projectID {
+			continue
+		}
+		events = append(events, mapEsProcessEvent(p))
+	}
+	return events, nil
+}
+
+func (z *ZeropsClient) SearchAppVersions(ctx context.Context, projectID string, limit int) ([]AppVersionEvent, error) {
+	clientID, err := z.getClientID(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	filter := body.EsFilter{
+		Search: body.EsFilterSearch{
+			body.EsSearchItem{
+				Name:     types.NewString("clientId"),
+				Operator: types.NewString("eq"),
+				Value:    types.NewString(clientID),
+			},
+		},
+		Sort: body.EsFilterSort{
+			body.EsSortItem{
+				Name:      types.NewString("created"),
+				Ascending: types.NewBoolNull(false),
+			},
+		},
+		Limit: types.NewIntNull(limit),
+	}
+
+	resp, err := z.handler.PostAppVersionSearch(ctx, filter)
+	if err != nil {
+		return nil, mapSDKError(err, "service")
+	}
+	out, err := resp.Output()
+	if err != nil {
+		return nil, mapSDKError(err, "service")
+	}
+
+	events := make([]AppVersionEvent, 0, len(out.Items))
+	for _, av := range out.Items {
+		pid := av.ProjectId.TypedString().String()
+		if pid != projectID {
+			continue
+		}
+		events = append(events, mapEsAppVersionEvent(av))
+	}
+	return events, nil
+}
+
+// ---------------------------------------------------------------------------
 // Mapping helpers
 // ---------------------------------------------------------------------------
 
@@ -763,6 +853,95 @@ func buildAutoscalingBody(params AutoscalingParams) body.Autoscaling {
 	}
 
 	return result
+}
+
+func mapEsProcessEvent(p output.EsProcess) ProcessEvent {
+	status := p.Status.String()
+	switch status {
+	case "DONE":
+		status = "FINISHED"
+	case statusCancelled:
+		status = "CANCELED"
+	}
+
+	serviceStacks := make([]ServiceStackRef, 0, len(p.ServiceStacks))
+	for _, ss := range p.ServiceStacks {
+		serviceStacks = append(serviceStacks, ServiceStackRef{
+			ID:   ss.Id.TypedString().String(),
+			Name: ss.Name.String(),
+		})
+	}
+
+	var started *string
+	if s, ok := p.Started.Get(); ok {
+		v := s.String()
+		started = &v
+	}
+	var finished *string
+	if f, ok := p.Finished.Get(); ok {
+		v := f.String()
+		finished = &v
+	}
+
+	var user *UserRef
+	if fn, ok := p.CreatedByUser.FullName.Get(); ok {
+		u := UserRef{FullName: fn.String()}
+		if email, ok := p.CreatedByUser.Email.Get(); ok {
+			u.Email = email.Native()
+		}
+		user = &u
+	}
+
+	return ProcessEvent{
+		ID:              p.Id.TypedString().String(),
+		ProjectID:       p.ProjectId.TypedString().String(),
+		ServiceStacks:   serviceStacks,
+		ActionName:      p.ActionName.String(),
+		Status:          status,
+		Created:         p.Created.String(),
+		Started:         started,
+		Finished:        finished,
+		CreatedByUser:   user,
+		CreatedBySystem: p.CreatedBySystem.Native(),
+	}
+}
+
+func mapEsAppVersionEvent(av output.EsAppVersion) AppVersionEvent {
+	event := AppVersionEvent{
+		ID:             av.Id.TypedString().String(),
+		ProjectID:      av.ProjectId.TypedString().String(),
+		ServiceStackID: av.ServiceStackId.TypedString().String(),
+		Source:         av.Source.String(),
+		Status:         av.Status.String(),
+		Sequence:       av.Sequence.Native(),
+		Created:        av.Created.String(),
+		LastUpdate:     av.LastUpdate.String(),
+	}
+
+	if av.Build != nil {
+		bi := &BuildInfo{}
+		hasBuild := false
+		if ps, ok := av.Build.PipelineStart.Get(); ok {
+			v := ps.String()
+			bi.PipelineStart = &v
+			hasBuild = true
+		}
+		if pf, ok := av.Build.PipelineFinish.Get(); ok {
+			v := pf.String()
+			bi.PipelineFinish = &v
+			hasBuild = true
+		}
+		if pf, ok := av.Build.PipelineFailed.Get(); ok {
+			v := pf.String()
+			bi.PipelineFailed = &v
+			hasBuild = true
+		}
+		if hasBuild {
+			event.Build = bi
+		}
+	}
+
+	return event
 }
 
 // ---------------------------------------------------------------------------

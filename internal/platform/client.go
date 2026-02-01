@@ -52,6 +52,10 @@ type Client interface {
 
 	// Logs (2-step: get access URL, then fetch from log backend)
 	GetProjectLog(ctx context.Context, projectID string) (*LogAccess, error)
+
+	// Activity
+	SearchProcesses(ctx context.Context, projectID string, limit int) ([]ProcessEvent, error)
+	SearchAppVersions(ctx context.Context, projectID string, limit int) ([]AppVersionEvent, error)
 }
 
 // LogFetcher fetches logs from the log backend (step 2).
@@ -206,4 +210,44 @@ type LogEntry struct {
 	Severity  string `json:"severity"`
 	Message   string `json:"message"`
 	Container string `json:"container,omitempty"`
+}
+
+// ProcessEvent represents a process from the search API (activity timeline).
+type ProcessEvent struct {
+	ID              string            `json:"id"`
+	ProjectID       string            `json:"projectId"`
+	ServiceStacks   []ServiceStackRef `json:"serviceStacks,omitempty"`
+	ActionName      string            `json:"actionName"`
+	Status          string            `json:"status"`
+	Created         string            `json:"created"`
+	Started         *string           `json:"started,omitempty"`
+	Finished        *string           `json:"finished,omitempty"`
+	CreatedByUser   *UserRef          `json:"createdByUser,omitempty"`
+	CreatedBySystem bool              `json:"createdBySystem"`
+}
+
+// AppVersionEvent represents a build/deploy event from the search API.
+type AppVersionEvent struct {
+	ID             string     `json:"id"`
+	ProjectID      string     `json:"projectId"`
+	ServiceStackID string     `json:"serviceStackId"`
+	Source         string     `json:"source"`
+	Status         string     `json:"status"`
+	Sequence       int        `json:"sequence"`
+	Build          *BuildInfo `json:"build,omitempty"`
+	Created        string     `json:"created"`
+	LastUpdate     string     `json:"lastUpdate"`
+}
+
+// BuildInfo contains build pipeline timing.
+type BuildInfo struct {
+	PipelineStart  *string `json:"pipelineStart,omitempty"`
+	PipelineFinish *string `json:"pipelineFinish,omitempty"`
+	PipelineFailed *string `json:"pipelineFailed,omitempty"`
+}
+
+// UserRef is a lightweight user reference.
+type UserRef struct {
+	FullName string `json:"fullName"`
+	Email    string `json:"email"`
 }

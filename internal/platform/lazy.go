@@ -216,3 +216,19 @@ func (l *LazyClient) GetProjectLog(ctx context.Context, projectID string) (*LogA
 	}
 	return c.GetProjectLog(ctx, projectID)
 }
+
+func (l *LazyClient) SearchProcesses(ctx context.Context, projectID string, limit int) ([]ProcessEvent, error) {
+	c, err := l.init()
+	if err != nil {
+		return nil, err
+	}
+	return c.SearchProcesses(ctx, projectID, limit)
+}
+
+func (l *LazyClient) SearchAppVersions(ctx context.Context, projectID string, limit int) ([]AppVersionEvent, error) {
+	c, err := l.init()
+	if err != nil {
+		return nil, err
+	}
+	return c.SearchAppVersions(ctx, projectID, limit)
+}

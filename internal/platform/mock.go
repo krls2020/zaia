@@ -15,16 +15,18 @@ var _ Client = (*Mock)(nil)
 type Mock struct {
 	mu sync.RWMutex
 
-	userInfo     *UserInfo
-	projects     []Project
-	project      *Project
-	services     []ServiceStack
-	service      *ServiceStack
-	processes    map[string]*Process
-	envVars      map[string][]EnvVar // serviceID -> env vars
-	projectEnv   []EnvVar
-	logAccess    *LogAccess
-	importResult *ImportResult
+	userInfo         *UserInfo
+	projects         []Project
+	project          *Project
+	services         []ServiceStack
+	service          *ServiceStack
+	processes        map[string]*Process
+	envVars          map[string][]EnvVar // serviceID -> env vars
+	projectEnv       []EnvVar
+	logAccess        *LogAccess
+	importResult     *ImportResult
+	processEvents    []ProcessEvent
+	appVersionEvents []AppVersionEvent
 
 	// Error overrides: method name -> error
 	errors map[string]error
@@ -116,6 +118,22 @@ func (m *Mock) WithImportResult(result *ImportResult) *Mock {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	m.importResult = result
+	return m
+}
+
+// WithProcessEvents sets the process events returned by SearchProcesses.
+func (m *Mock) WithProcessEvents(events []ProcessEvent) *Mock {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	m.processEvents = events
+	return m
+}
+
+// WithAppVersionEvents sets the app version events returned by SearchAppVersions.
+func (m *Mock) WithAppVersionEvents(events []AppVersionEvent) *Mock {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	m.appVersionEvents = events
 	return m
 }
 
@@ -373,6 +391,24 @@ func (m *Mock) DisableSubdomainAccess(_ context.Context, serviceID string) (*Pro
 		Status:        "PENDING",
 		ServiceStacks: []ServiceStackRef{{ID: serviceID}},
 	}, nil
+}
+
+func (m *Mock) SearchProcesses(_ context.Context, _ string, _ int) ([]ProcessEvent, error) {
+	if err := m.getError("SearchProcesses"); err != nil {
+		return nil, err
+	}
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	return m.processEvents, nil
+}
+
+func (m *Mock) SearchAppVersions(_ context.Context, _ string, _ int) ([]AppVersionEvent, error) {
+	if err := m.getError("SearchAppVersions"); err != nil {
+		return nil, err
+	}
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	return m.appVersionEvents, nil
 }
 
 func (m *Mock) GetProjectLog(_ context.Context, _ string) (*LogAccess, error) {

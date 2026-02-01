@@ -81,6 +81,7 @@ func NewRootForTest(deps RootDeps) *cobra.Command {
 	rootCmd.AddCommand(NewImport(storagePath, client))
 	rootCmd.AddCommand(NewDelete(storagePath, client))
 	rootCmd.AddCommand(NewSubdomain(storagePath, client))
+	rootCmd.AddCommand(NewEvents(storagePath, client))
 	rootCmd.AddCommand(NewSetup())
 
 	return rootCmd
@@ -133,6 +134,7 @@ func NewRoot() *cobra.Command {
 	rootCmd.AddCommand(NewImport(storagePath, client))
 	rootCmd.AddCommand(NewDelete(storagePath, client))
 	rootCmd.AddCommand(NewSubdomain(storagePath, client))
+	rootCmd.AddCommand(NewEvents(storagePath, client))
 	rootCmd.AddCommand(NewSetup())
 
 	return rootCmd

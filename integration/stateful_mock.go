@@ -475,6 +475,20 @@ func (m *StatefulMock) DisableSubdomainAccess(_ context.Context, serviceID strin
 	return m.makeProcess("disableSubdomain", serviceID), nil
 }
 
+func (m *StatefulMock) SearchProcesses(_ context.Context, _ string, _ int) ([]platform.ProcessEvent, error) {
+	if err := m.getError("SearchProcesses"); err != nil {
+		return nil, err
+	}
+	return nil, nil
+}
+
+func (m *StatefulMock) SearchAppVersions(_ context.Context, _ string, _ int) ([]platform.AppVersionEvent, error) {
+	if err := m.getError("SearchAppVersions"); err != nil {
+		return nil, err
+	}
+	return nil, nil
+}
+
 func (m *StatefulMock) GetProjectLog(_ context.Context, _ string) (*platform.LogAccess, error) {
 	if err := m.getError("GetProjectLog"); err != nil {
 		return nil, err

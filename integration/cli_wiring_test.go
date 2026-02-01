@@ -20,7 +20,7 @@ func TestWiring_AllCommandsRegistered(t *testing.T) {
 		"validate", "search",
 		"start", "stop", "restart", "scale",
 		"env", "import", "delete", "subdomain",
-		"setup",
+		"events", "setup",
 	}
 
 	cmds := root.Commands()

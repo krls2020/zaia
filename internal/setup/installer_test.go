@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+	"syscall"
 	"testing"
 )
 
@@ -169,6 +170,65 @@ func TestInstallBinary_Idempotent(t *testing.T) {
 	data, _ := os.ReadFile(binPath)
 	if string(data) != "v2" {
 		t.Errorf("content = %q, want %q", string(data), "v2")
+	}
+}
+
+func TestInstallBinary_OverwriteCreatesNewInode(t *testing.T) {
+	dir := t.TempDir()
+	binPath := filepath.Join(dir, "zaia-mcp")
+
+	downloader := &mockDownloader{data: []byte("v1-binary")}
+
+	// First install
+	err := InstallBinary(downloader, "https://example.com/zaia-mcp", binPath)
+	if err != nil {
+		t.Fatalf("first install failed: %v", err)
+	}
+
+	info1, err := os.Stat(binPath)
+	if err != nil {
+		t.Fatalf("stat after first install: %v", err)
+	}
+	stat1 := info1.Sys().(*syscall.Stat_t)
+	inode1 := stat1.Ino
+
+	// Second install (overwrite)
+	downloader.data = []byte("v2-binary")
+	err = InstallBinary(downloader, "https://example.com/zaia-mcp", binPath)
+	if err != nil {
+		t.Fatalf("second install failed: %v", err)
+	}
+
+	info2, err := os.Stat(binPath)
+	if err != nil {
+		t.Fatalf("stat after second install: %v", err)
+	}
+	stat2 := info2.Sys().(*syscall.Stat_t)
+	inode2 := stat2.Ino
+
+	if inode1 == inode2 {
+		t.Errorf("inode unchanged after overwrite (%d == %d); atomic rename should create fresh inode", inode1, inode2)
+	}
+
+	// Verify content is updated
+	data, _ := os.ReadFile(binPath)
+	if string(data) != "v2-binary" {
+		t.Errorf("content = %q, want %q", string(data), "v2-binary")
+	}
+}
+
+func TestInstallBinary_EmptyDownloadFails(t *testing.T) {
+	dir := t.TempDir()
+	binPath := filepath.Join(dir, "zaia-mcp")
+
+	downloader := &mockDownloader{data: []byte{}}
+
+	err := InstallBinary(downloader, "https://example.com/zaia-mcp", binPath)
+	if err == nil {
+		t.Fatal("expected error for empty download")
+	}
+	if !strings.Contains(err.Error(), "empty") {
+		t.Errorf("error = %q, should contain 'empty'", err.Error())
 	}
 }
 

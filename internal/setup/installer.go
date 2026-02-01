@@ -78,7 +78,8 @@ func (h *HTTPDownloader) Download(url string) ([]byte, error) {
 }
 
 // InstallBinary downloads from url and writes the binary to binPath with executable permissions.
-// Creates parent directories if needed.
+// Creates parent directories if needed. Uses atomic rename (tmp file + rename) to ensure
+// a fresh inode, which clears macOS AMFI signature cache and prevents partial writes.
 func InstallBinary(dl Downloader, url, binPath string) error {
 	data, err := dl.Download(url)
 	if err != nil {
@@ -90,8 +91,21 @@ func InstallBinary(dl Downloader, url, binPath string) error {
 		return fmt.Errorf("creating directory %s: %w", dir, err)
 	}
 
-	if err := os.WriteFile(binPath, data, 0755); err != nil { //nolint:gosec // binary needs executable permissions
+	if len(data) == 0 {
+		return fmt.Errorf("downloaded binary is empty")
+	}
+
+	// Write to temp file first, then atomic rename.
+	// This ensures: (a) fresh inode (clears macOS AMFI signature cache),
+	// (b) no partial writes if download is corrupted.
+	tmpPath := binPath + ".tmp"
+	if err := os.WriteFile(tmpPath, data, 0755); err != nil { //nolint:gosec // binary needs executable permissions
 		return fmt.Errorf("writing binary: %w", err)
+	}
+
+	_ = os.Remove(binPath)
+	if err := os.Rename(tmpPath, binPath); err != nil {
+		return fmt.Errorf("replacing binary: %w", err)
 	}
 
 	return nil

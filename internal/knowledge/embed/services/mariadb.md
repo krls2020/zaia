@@ -7,7 +7,7 @@ mariadb, mysql, sql, relational, database, maxscale, replication, 3306, mysql co
 MariaDB on Zerops uses MaxScale for HA routing with async replication on port 3306; choose it only when you specifically need MySQL wire protocol compatibility.
 
 ## Zerops-Specific Behavior
-- Versions: 10.4, 10.6, 10.11, 11.4
+- Versions: 10.6
 - Port: **3306** (fixed, no separate replica port)
 - HA routing: MaxScale (smart read/write splitting)
 - Replication: Async
@@ -30,7 +30,7 @@ mysql://${user}:${password}@${hostname}:3306/${dbname}
 # import.yaml
 services:
   - hostname: db
-    type: mariadb@10.11
+    type: mariadb@10.6
     mode: HA
 ```
 

@@ -7,7 +7,7 @@ valkey, redis, cache, key-value, in-memory, session, 6379, 6380, 7000, 7001, red
 Valkey is the recommended Redis replacement on Zerops; HA mode uses custom traffic forwarding (not native Valkey) where ports 6379/6380 on replicas forward to master.
 
 ## Zerops-Specific Behavior
-- Versions: 7.2
+- Versions: **7.2** (use `valkey@7.2` — other versions may pass validation but fail at import)
 - Ports:
   - **6379** — Read/write, non-TLS (master)
   - **6380** — Read/write, TLS (master)
@@ -51,10 +51,11 @@ services:
 ```
 
 ## Gotchas
-1. **Port forwarding is Zerops-specific**: Replicas forward 6379/6380 to master — not standard Redis/Valkey behavior
-2. **Async replication**: Brief data loss possible during master failover
-3. **Use port 7000/7001 for read scaling**: Direct replica access, no forwarding
-4. **TLS only for external/VPN**: Don't use TLS ports (6380/7001) for internal service-to-service communication
+1. **Version must be 7.2**: `valkey@8` passes dry-run validation but fails at actual import — always use `valkey@7.2`
+2. **Port forwarding is Zerops-specific**: Replicas forward 6379/6380 to master — not standard Redis/Valkey behavior
+3. **Async replication**: Brief data loss possible during master failover
+4. **Use port 7000/7001 for read scaling**: Direct replica access, no forwarding
+5. **TLS only for external/VPN**: Don't use TLS ports (6380/7001) for internal service-to-service communication
 
 ## See Also
 - zerops://decisions/choose-cache

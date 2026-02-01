@@ -7,7 +7,7 @@ python, pip, flask, fastapi, django, uvicorn, gunicorn, virtualenv, requirements
 Python on Zerops uses Alpine base with pip. Use `addToRunPrepare` under `build:` to copy files from build to run container. No default port.
 
 ## Zerops-Specific Behavior
-- Versions: 3.11, 3.12
+- Versions: 3.12
 - Base: Alpine (default)
 - Package manager: pip (pre-installed)
 - Working directory: `/var/www`

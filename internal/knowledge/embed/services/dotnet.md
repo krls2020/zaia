@@ -7,7 +7,7 @@ dotnet, csharp, aspnet, kestrel, nuget, blazor, entity framework, dotnet build, 
 .NET on Zerops uses Kestrel as the default web server. Use `dotnet build -o app` to compile and deploy the `app/~` directory with tilde syntax.
 
 ## Zerops-Specific Behavior
-- Versions: 6, 8, 9
+- Versions: 9, 8, 7, 6
 - Base: Alpine (default)
 - Web server: Kestrel (built-in)
 - Working directory: `/var/www`

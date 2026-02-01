@@ -7,7 +7,7 @@ bun, javascript, typescript, bun runtime, bunx, bun.lockb, fast js, bun install
 Bun on Zerops is a drop-in Node.js replacement with native TypeScript support; uses `bun.lockb` lockfile and `bunx` instead of `npx`. Deploy compiled output, not node_modules.
 
 ## Zerops-Specific Behavior
-- Versions: 1.1
+- Versions: 1.2, 1.1.34 (Ubuntu only), nightly, canary
 - Base: Alpine (default)
 - Package manager: `bun install` (npm-compatible)
 - Lockfile: `bun.lockb` (binary format)

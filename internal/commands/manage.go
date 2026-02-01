@@ -8,6 +8,12 @@ import (
 	"github.com/zeropsio/zaia/internal/platform"
 )
 
+const (
+	actionStart   = "start"
+	actionStop    = "stop"
+	actionRestart = "restart"
+)
+
 // newLifecycleCmd creates a lifecycle command (start/stop/restart).
 func newLifecycleCmd(storagePath string, client platform.Client, action string) *cobra.Command {
 	cmd := &cobra.Command{
@@ -40,11 +46,11 @@ func newLifecycleCmd(storagePath string, client platform.Client, action string) 
 
 			var process *platform.Process
 			switch action {
-			case "start":
+			case actionStart:
 				process, err = client.StartService(ctx, svc.ID)
-			case "stop":
+			case actionStop:
 				process, err = client.StopService(ctx, svc.ID)
-			case "restart":
+			case actionRestart:
 				process, err = client.RestartService(ctx, svc.ID)
 			}
 			if err != nil {
@@ -63,17 +69,17 @@ func newLifecycleCmd(storagePath string, client platform.Client, action string) 
 
 // NewStart creates the start command.
 func NewStart(storagePath string, client platform.Client) *cobra.Command {
-	return newLifecycleCmd(storagePath, client, "start")
+	return newLifecycleCmd(storagePath, client, actionStart)
 }
 
 // NewStop creates the stop command.
 func NewStop(storagePath string, client platform.Client) *cobra.Command {
-	return newLifecycleCmd(storagePath, client, "stop")
+	return newLifecycleCmd(storagePath, client, actionStop)
 }
 
 // NewRestart creates the restart command.
 func NewRestart(storagePath string, client platform.Client) *cobra.Command {
-	return newLifecycleCmd(storagePath, client, "restart")
+	return newLifecycleCmd(storagePath, client, actionRestart)
 }
 
 // NewScale creates the scale command.

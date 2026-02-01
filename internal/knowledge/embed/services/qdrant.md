@@ -31,7 +31,7 @@ Native snapshotting: `.snapshot` format (compressed), taken from primary node.
 # import.yaml
 services:
   - hostname: vectors
-    type: qdrant@1
+    type: qdrant@1.12
     mode: HA
 ```
 

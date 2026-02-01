@@ -33,7 +33,7 @@ Typesense uses Raft consensus for HA (3 nodes), has an immutable master API key,
 # import.yaml
 services:
   - hostname: search
-    type: typesense@27
+    type: typesense@27.1
     mode: HA
 ```
 

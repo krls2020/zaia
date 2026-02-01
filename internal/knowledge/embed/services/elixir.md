@@ -7,7 +7,7 @@ elixir, erlang, otp, phoenix, mix, release, beam, clustering, distributed, ecto
 Elixir on Zerops builds on `elixir@1.16` but runs on `alpine@latest` for minimal footprint. Use Mix releases for deployment with tilde syntax.
 
 ## Zerops-Specific Behavior
-- Versions: 1.16
+- Versions: 1.16, 1
 - Build base: `elixir@1.16` (Erlang/OTP pre-installed)
 - Run base: `alpine@latest` (multi-runtime pattern — compiled BEAM release doesn't need full Elixir)
 - Build tool: Mix (pre-installed)

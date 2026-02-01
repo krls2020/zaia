@@ -89,16 +89,30 @@ services:
 ```
 
 ## Service Types
-| Type | Example |
-|------|---------|
-| Runtimes | `nodejs@22`, `python@3.12`, `go@1`, `php-nginx@8.4`, `java@21`, `dotnet@8`, `rust@stable`, `bun@1.1`, `deno@1`, `elixir@1.16`, `gleam@1.5` |
-| Containers | `alpine@3.20`, `ubuntu@24.04` |
-| Databases | `postgresql@16`, `mariadb@10.11`, `clickhouse@25.3` |
-| Cache | `valkey@7.2`, `keydb@6` |
-| Search | `elasticsearch@8`, `meilisearch@1`, `typesense@27`, `qdrant@1` |
-| Queues | `kafka@3`, `nats@2` |
-| Web | `nginx@1`, `static` |
+| Type | Available Versions |
+|------|-------------------|
+| Runtimes | `nodejs@22` / `@20` / `@18`, `python@3.12`, `go@1.22` / `@1`, `php-nginx@8.4` / `@8.3` / `@8.1`, `php-apache@8.4` / `@8.3` / `@8.1`, `java@21` / `@17`, `dotnet@9` / `@8` / `@7` / `@6`, `rust@1.80` / `@1.78` / `@nightly` / `@stable`, `bun@1.2` / `@1.1` / `@nightly` / `@canary`, `deno@2` / `@1`, `elixir@1.16` / `@1`, `gleam@1.5` / `@1` |
+| Containers | `alpine@3.20` / `@3.19` / `@3.18` / `@3.17`, `ubuntu@24.04` / `@22.04` |
+| Databases | `postgresql@17` / `@16` / `@14`, `mariadb@10.6`, `clickhouse@25.3` |
+| Cache | `valkey@7.2` (only version available), `keydb@6` (deprecated) |
+| Search | `elasticsearch@8.16`, `meilisearch@1.10`, `typesense@27.1`, `qdrant@1.12` / `@1.10` |
+| Queues | `kafka@3.8`, `nats@2.10` |
+| Web | `nginx@1.22`, `static` |
 | Storage | `object-storage`, `shared-storage` |
+
+## Using zerops_import Tool
+
+The `zerops_import` tool accepts YAML in two ways:
+- **`content`** (inline YAML string) — preferred for programmatic use, no file I/O needed
+- **`filePath`** (path to existing file) — for pre-existing files only
+
+Always use `dryRun: true` first to validate before actual import.
+
+### Validate Before Import
+Use `zerops_validate` with `type: "import.yml"` (not `"import"`) to check syntax:
+```
+zerops_validate(content: "services:\n  ...", type: "import.yml")
+```
 
 ## Gotchas
 1. **`project:` section is optional**: When using ZAIA, import adds services to existing project — no `project:` section needed
@@ -106,6 +120,9 @@ services:
 3. **`mode` is immutable**: HA/NON_HA cannot be changed after creation
 4. **`corePackage` matters**: LIGHT vs SERIOUS affects build hours, backup storage, and egress limits
 5. **Object storage size range**: 1-100 GB — cannot exceed 100GB per service
+6. **Validate type is `import.yml`**: Using `type: "import"` returns "Unknown file type" — always use `type: "import.yml"`
+7. **Dry-run ≠ real import**: Some service types (e.g., `valkey@8`) pass dry-run validation but fail at actual import — use exact documented versions
+8. **`mode` is mandatory for HA-capable services**: PostgreSQL, MariaDB, Valkey, KeyDB, shared-storage, elasticsearch, and other HA-capable services require `mode: NON_HA` or `mode: HA` explicitly — dry-run passes without it but real import fails with "Mandatory parameter is missing"
 
 ## See Also
 - zerops://config/zerops-yml

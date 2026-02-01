@@ -31,7 +31,7 @@ Format: `elasticdump` (`.gz` per index/component, gzip-compressed JSON).
 # import.yaml
 services:
   - hostname: search
-    type: elasticsearch@8
+    type: elasticsearch@8.16
     mode: HA
 ```
 

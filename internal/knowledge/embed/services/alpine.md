@@ -7,7 +7,7 @@ alpine, linux, container, lightweight, base, musl, apk, minimal, custom runtime
 Alpine is the default base for all Zerops runtimes (~5MB), using musl libc and apk package manager — use it unless you specifically need Ubuntu's glibc or apt ecosystem.
 
 ## Zerops-Specific Behavior
-- Base image: Alpine 3.20
+- Versions: 3.20 (latest), 3.19, 3.18, 3.17
 - Size: ~5MB (vs ~100MB for Ubuntu)
 - Package manager: `apk add --no-cache`
 - libc: musl (not glibc)

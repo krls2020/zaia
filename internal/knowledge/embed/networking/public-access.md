@@ -13,6 +13,9 @@ Zerops offers three public access methods: zerops.app subdomains (dev only, 50MB
 - Max upload: **50 MB**
 - **Not for production** — use for development/testing only
 - Auto-provisioned SSL
+- Enable via import YAML: `enableSubdomainAccess: true` (works for all runtime/web types)
+- Enable via API: `zerops_subdomain enable` (only works on deployed/ACTIVE services)
+- Works for: nodejs, static, nginx, go, python, php, java, rust, dotnet, and all other runtime types
 
 ### 2. Custom Domains (Production)
 - Per-project HTTPS balancer (2 containers, HA)

@@ -7,7 +7,7 @@ rust, cargo, rustup, musl, static binary, release build, rust binary, cargo buil
 Rust on Zerops compiles to a static binary; always use `--release`, cache `target/` directory, and deploy using tilde syntax for the binary.
 
 ## Zerops-Specific Behavior
-- Versions: stable, 1.80, 1.78, nightly
+- Versions: 1.80, 1.78, nightly, stable
 - Base: Alpine (default) — musl target
 - Build tool: Cargo (pre-installed)
 - Working directory: `/var/www`

@@ -4,10 +4,10 @@
 deno, javascript, typescript, deno deploy, permissions, deno.json, deno.jsonc, deno task, secure runtime
 
 ## TL;DR
-Deno on Zerops uses `deno@1`. Use `deno task` commands defined in `deno.jsonc` for build and start, and deploy specific output files.
+Deno on Zerops uses `deno@2` (latest) or `deno@1`. Use `deno task` commands defined in `deno.jsonc` for build and start, and deploy specific output files.
 
 ## Zerops-Specific Behavior
-- Versions: 1
+- Versions: 2, 1
 - Base: Alpine (default)
 - Config: `deno.jsonc` (tasks, imports)
 - Working directory: `/var/www`

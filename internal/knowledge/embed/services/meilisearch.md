@@ -27,7 +27,7 @@ Native dump command: `.dump` format (standard Meilisearch format).
 # import.yaml
 services:
   - hostname: search
-    type: meilisearch@1
+    type: meilisearch@1.10
     mode: NON_HA
 ```
 

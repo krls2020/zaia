@@ -7,7 +7,7 @@ postgresql, postgres, sql, relational, database, pgbouncer, read replica, ha, pr
 PostgreSQL is the recommended database on Zerops with full HA (3 nodes), read replicas on port 5433, and external TLS access via pgBouncer on port 6432.
 
 ## Zerops-Specific Behavior
-- Versions: 12, 13, 14, 15, 16
+- Versions: 17, 16, 14
 - Ports:
   - **5432** — Primary (read/write)
   - **5433** — Read replicas (HA only, read-only)

@@ -40,11 +40,32 @@ ACME:     CNAME _acme-challenge.<domain> <domain>.zerops.zone
 - Enable "Always Use HTTPS"
 - WAF exception: Skip rule for `/.well-known/acme-challenge/` (ACME validation)
 
+## Preparing a Service for Cloudflare
+
+Any runtime service (nodejs, go, python, etc.) can be put behind Cloudflare. Steps:
+
+1. **Create the service** with `enableSubdomainAccess: true` in import YAML:
+   ```yaml
+   services:
+     - hostname: myapp
+       type: nodejs@22
+       enableSubdomainAccess: true
+       minContainers: 1
+   ```
+2. **Deploy code** to the service (via `zcli push` or `buildFromGit`)
+3. **Configure Cloudflare DNS** to point to your Zerops project IP
+4. **Set SSL mode to "Full (strict)"** in Cloudflare dashboard
+
+**Important**: The `zerops_subdomain enable` tool only works on deployed (ACTIVE) services. For new services, use `enableSubdomainAccess: true` in import YAML.
+
+Internal service-to-service communication must always use `http://` — never `https://`. SSL terminates at the Zerops L7 balancer.
+
 ## Gotchas
 1. **Flexible SSL = redirect loop**: Zerops forces HTTPS, Cloudflare Flexible sends HTTP → infinite redirect
 2. **Shared IPv4 + proxy is broken**: Reverse AAAA lookup doesn't work with Cloudflare proxy on shared IPv4
 3. **ACME challenge needs WAF exception**: Without it, Cloudflare blocks Let's Encrypt validation
 4. **Wildcard SSL on Cloudflare Free**: Free plan doesn't proxy wildcard subdomains — use DNS-only or upgrade
+5. **Subdomain on undeployed service**: `zerops_subdomain enable` returns "Service stack is not http or https" on READY_TO_DEPLOY services — deploy code first or use `enableSubdomainAccess` in import YAML
 
 ## See Also
 - zerops://networking/public-access

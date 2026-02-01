@@ -30,7 +30,7 @@ Kafka on Zerops uses SASL PLAIN auth on port 9092, runs 3 brokers in HA mode wit
 # import.yaml
 services:
   - hostname: events
-    type: kafka@3
+    type: kafka@3.8
     mode: HA
 ```
 

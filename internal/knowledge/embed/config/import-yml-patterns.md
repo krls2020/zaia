@@ -87,6 +87,19 @@ services:
       S3_SECRET: ${storage_secretAccessKey}
 ```
 
+## Subdomain Access
+
+To make a service publicly accessible via `*.zerops.app` subdomain, add `enableSubdomainAccess: true` in the import YAML. This works for **all runtime and web service types** (nodejs, static, nginx, go, python, etc.):
+
+```yaml
+services:
+  - hostname: app
+    type: nodejs@22
+    enableSubdomainAccess: true    # Pre-configures subdomain
+```
+
+**Important**: The `zerops_subdomain enable` API tool only works on services that have been deployed (status ACTIVE). For newly imported services (status READY_TO_DEPLOY), use `enableSubdomainAccess: true` in import YAML instead.
+
 ## Common Multi-Service Combos
 
 ### Simple (App + DB)
@@ -190,11 +203,12 @@ HA mode is **immutable** after creation. For production:
 
 ## Gotchas
 1. **No `project:` section**: ZAIA import adds services to existing project — YAML must not contain `project:` key
-2. **Priority is startup order**: Not importance — higher number starts first
-3. **Preprocessor first line only**: `#yamlPreprocessor=on` must be the very first line
-4. **HA is immutable**: Cannot switch NON_HA↔HA after creation — must delete and recreate
-5. **envSecrets persist**: Generated secrets survive service restarts and rebuilds
-6. **Service hostname = internal DNS**: The `hostname` field becomes the DNS name for internal routing
+2. **`mode` is mandatory**: PostgreSQL, MariaDB, Valkey, KeyDB, shared-storage, elasticsearch MUST have `mode: NON_HA` or `mode: HA` — omitting passes dry-run but **fails real import** with "Mandatory parameter is missing"
+3. **Priority is startup order**: Not importance — higher number starts first
+4. **Preprocessor first line only**: `#yamlPreprocessor=on` must be the very first line
+5. **HA is immutable**: Cannot switch NON_HA↔HA after creation — must delete and recreate
+6. **envSecrets persist**: Generated secrets survive service restarts and rebuilds
+7. **Service hostname = internal DNS**: The `hostname` field becomes the DNS name for internal routing
 
 ## See Also
 - zerops://config/import-yml

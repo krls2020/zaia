@@ -7,7 +7,7 @@ gleam, beam, erlang, functional, type-safe, gleam build, javascript target, erla
 Gleam on Zerops compiles to either Erlang (BEAM) or JavaScript targets; use Erlang target for server-side and deploy as an Erlang shipment with tilde syntax.
 
 ## Zerops-Specific Behavior
-- Versions: 1.5
+- Versions: 1.5, 1
 - Base: Alpine (default), Erlang/OTP pre-installed
 - Build tool: Gleam CLI (pre-installed)
 - Working directory: `/var/www`

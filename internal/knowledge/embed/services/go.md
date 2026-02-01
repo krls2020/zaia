@@ -7,7 +7,7 @@ go, golang, go build, cgo, binary, static binary, go modules, go mod
 Go on Zerops compiles to a static binary by default (Alpine); use Ubuntu base if you need CGO with glibc, and deploy only the compiled binary.
 
 ## Zerops-Specific Behavior
-- Versions: 1 (alias for latest stable), 1.22 (pinned)
+- Versions: 1.22, 1 (alias for latest stable)
 - Base: Alpine (default) — musl libc
 - Go modules: Cached outside `/build/source` (persist even with `cache: false`)
 - Working directory: `/var/www`

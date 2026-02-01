@@ -26,7 +26,8 @@ Zerops has two scopes (service and project), two isolation modes, and a `RUNTIME
 
 ### `service` (default, recommended)
 - Services are isolated — must explicitly reference other service vars
-- Cross-service reference: `${servicename_variablename}`
+- Cross-service reference: `${servicename_variablename}` (uses **underscore**, not dash)
+- Example: hostname `my-db` → reference as `${my_db_password}` (dashes become underscores)
 
 ### `none` (legacy)
 - All variables shared with service prefix (e.g., `db_password`)
@@ -46,11 +47,37 @@ Zerops has two scopes (service and project), two isolation modes, and a `RUNTIME
 - Values: ASCII only, no EOL characters
 
 ## Configuration
+
+### In zerops.yaml (runtime env vars)
 ```yaml
 # zerops.yaml (under run: section)
 envVariables:
   NODE_ENV: production
   DATABASE_URL: postgresql://${db_user}:${db_password}@db:5432/${db_dbname}
+```
+
+### In import.yaml (at service creation time)
+```yaml
+services:
+  - hostname: db
+    type: postgresql@16
+  - hostname: app
+    type: nodejs@22
+    envSecrets:
+      DB_HOST: ${db_hostname}
+      DB_PORT: ${db_port}
+      DB_USER: ${db_user}
+      DB_PASSWORD: ${db_password}
+      DB_NAME: ${db_dbName}
+      DATABASE_URL: postgresql://${db_user}:${db_password}@db:5432/${db_dbName}
+```
+
+### Via zerops_env tool (after service exists)
+```
+zerops_env(action: "set", serviceHostname: "app", variables: [
+  "DB_HOST=${db_hostname}",
+  "DB_PASSWORD=${db_password}"
+])
 ```
 
 ## Gotchas
